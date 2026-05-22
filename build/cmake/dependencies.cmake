@@ -35,9 +35,12 @@ else()
 endif()
 find_package(Mongoose)
 # CMP0167 (CMake 3.30+) removes the bundled FindBoost module in favour of
-# upstream BoostConfig.
+# upstream BoostConfig. Use the upstream config (NEW): the bundled FindBoost
+# carries a hard-coded list of known Boost versions and fails to locate very
+# recent Boost (e.g. 1.90 on Debian sid), whereas BoostConfig.cmake ships with
+# the libboost-dev packages and always matches the installed version.
 if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 OLD)
+    cmake_policy(SET CMP0167 NEW)
 endif()
 find_package(
     Boost
