@@ -4,7 +4,13 @@ set(TARGET nscp)
 
 project(service)
 include_directories(${BOOST_INCLUDE_DIRS})
-include_directories(${MINIZ_INCLUDE_DIR})
+# Include path for the zip backend: vendored miniz on Windows, system libzip
+# elsewhere. The nscp_miniz target propagates the right path either way, but
+# legacy direct includes need this fallback while the source still uses
+# unqualified <miniz.h>.
+if(WIN32)
+    include_directories(${MINIZ_INCLUDE_DIR})
+endif()
 link_directories(${BOOST_LIB_DIRS})
 
 set(service_SRCS

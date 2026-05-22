@@ -161,9 +161,28 @@ else()
     message(STATUS " ! CSharp not found")
 endif()
 if(MINIZ_FOUND)
-    message(STATUS " - Miniz found in: ${MINIZ_INCLUDE_DIR}")
+    if(WIN32)
+        message(STATUS " - Miniz found in: ${MINIZ_INCLUDE_DIR}")
+    elseif(TARGET libzip::zip)
+        message(STATUS " - libzip found (CMake config package)")
+    else()
+        message(
+            STATUS
+            " - libzip found via pkg-config: ${LIBZIP_INCLUDE_DIRS} (${LIBZIP_LIBRARIES})"
+        )
+    endif()
 else(MINIZ_FOUND)
-    message(STATUS " ! Miniz not found: MINIZ_INCLUDE_DIR=${MINIZ_INCLUDE_DIR}")
+    if(WIN32)
+        message(
+            STATUS
+            " ! Miniz not found: MINIZ_INCLUDE_DIR=${MINIZ_INCLUDE_DIR}"
+        )
+    else()
+        message(
+            STATUS
+            " ! libzip not found - install libzip-dev (Debian) or libzip-devel (RPM)"
+        )
+    endif()
 endif(MINIZ_FOUND)
 if(MKDOCS_FOUND)
     message(STATUS " - MKDocs found in: ${MKDOCS_EXECUTABLE}")
