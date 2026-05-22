@@ -488,6 +488,9 @@ macro(nscp_add_test _TARGET)
 endmacro()
 
 function(NSCP_CREATE_TEST _TARGET)
+    if(NOT BUILD_TESTING)
+        return()
+    endif()
     cmake_parse_arguments(
         PARSE_ARGV 1
         ARG

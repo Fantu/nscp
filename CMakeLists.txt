@@ -20,6 +20,9 @@ else()
     set(PLUGIN_API_TARGET nscp_plugin_api)
 endif()
 
+option(BUILD_WEBSERVER "Build the WEBServer module and the bundled web frontend" ON)
+option(BUILD_DOCS "Build the documentation (requires mkdocs)" ON)
+
 # ##############################################################################
 #
 # Setup cmake enviornment and include custom config overrides
@@ -912,16 +915,23 @@ if(CRYPTOPP_CMAKE)
     )
 endif(CRYPTOPP_CMAKE)
 
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL
-        https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(INSTALL_GTEST OFF)
-FetchContent_MakeAvailable(googletest)
+# Use a system-provided GTest when available (e.g. the Debian libgtest-dev /
+# libgmock-dev packages, which dependencies.cmake already locates via
+# find_package(GTest)). Only fall back to downloading googletest when no system
+# package is present - the download requires network access and is unacceptable
+# for distro builds.
+if(NOT GTest_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL
+            https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    set(INSTALL_GTEST OFF)
+    FetchContent_MakeAvailable(googletest)
+endif()
 include_directories(${GTEST_INCLUDE_DIR})
 enable_testing()
 include(GoogleTest)
@@ -998,6 +1008,12 @@ foreach(CURRENT_LIB ${ALL_LIB_PROJECTS})
         OR CURRENT_LIB_NAME
             STREQUAL
             "dotnet-plugin-api"
+        OR (
+            NOT BUILD_WEBSERVER
+            AND CURRENT_LIB_NAME
+                STREQUAL
+                "mongoose-cpp"
+        )
     )
         message(
             STATUS
@@ -1100,9 +1116,13 @@ add_subdirectory("service")
 add_subdirectory("scripts")
 add_subdirectory("op5/config")
 add_subdirectory("op5/scripts")
-add_subdirectory("web")
+if(BUILD_WEBSERVER)
+    add_subdirectory("web")
+endif()
 add_subdirectory("files")
-add_subdirectory("tests")
+if(BUILD_TESTING)
+    add_subdirectory("tests")
+endif()
 
 LOAD_SECTIONS(ALL_MODULE_NAMES "modules/*/module.cmake" "Modules")
 LOAD_SECTIONS(ALL_CLIENT_NAMES "clients/*/module.cmake" "Clients")
@@ -1123,7 +1143,9 @@ set_target_properties(
             "${BUILD_TARGET_LIB_PATH}"
 )
 
-add_subdirectory("docs")
+if(BUILD_DOCS)
+    add_subdirectory("docs")
+endif()
 
 if(WIN32)
     LOAD_SECTIONS(
@@ -1248,5 +1270,7 @@ add_dependencies(
     ${ALL_MODULE_NAMES}
     copy_files
     copy_scripts
-    copy_resources
 )
+if(BUILD_WEBSERVER)
+    add_dependencies(clion__build_all copy_resources)
+endif()
