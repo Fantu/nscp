@@ -22,18 +22,22 @@ if(WIN32)
     endif()
     mark_as_advanced(MINIZ_INCLUDE_DIR)
 else()
-    # Prefer the CMake config package shipped by recent libzip releases
-    # (libzip >= 1.7 on Debian 12 / Ubuntu 22.04+). Falls back to pkg-config
-    # for older distros that only ship the .pc file.
-    find_package(libzip CONFIG QUIET)
-    if(TARGET libzip::zip)
+    # Prefer pkg-config: Debian/Ubuntu's libzip-dev ships a CMake config that
+    # references the zipcmp/zipmerge/ziptool binaries from the separate
+    # libzip-tools package and aborts with FATAL_ERROR when they're absent
+    # (the error is raised inside libzip-targets.cmake, so find_package QUIET
+    # cannot suppress it). pkg-config gives us -lzip and the headers without
+    # touching that file. The CONFIG package is only consulted as a fallback
+    # for distros that lack pkg-config.
+    find_package(PkgConfig QUIET)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(LIBZIP QUIET libzip)
+    endif()
+    if(LIBZIP_FOUND)
         set(MINIZ_FOUND TRUE)
     else()
-        find_package(PkgConfig QUIET)
-        if(PKG_CONFIG_FOUND)
-            pkg_check_modules(LIBZIP QUIET libzip)
-        endif()
-        if(LIBZIP_FOUND)
+        find_package(libzip CONFIG QUIET)
+        if(TARGET libzip::zip)
             set(MINIZ_FOUND TRUE)
         else()
             set(MINIZ_FOUND FALSE)
