@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# See debhelper(7) and /usr/share/doc/debmake-doc/ for details.
+
+# Output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+# NSCP's CMake does not autodetect the Boost.Python component name (see
+# modules/PythonScript/CMakeLists.txt); derive it from the default python3
+# so it tracks the interpreter currently in the archive.
+PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
+
+%:
+	dh $@
+
+# Minimal agent-only Linux build:
+#  - no web frontend (BUILD_WEBSERVER) and no bundled docs (BUILD_DOCS)
+#  - tests off (BUILD_TESTING) to avoid the googletest FetchContent download
+#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING)
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DBUILD_WEBSERVER=OFF \
+		-DBUILD_DOCS=OFF \
+		-DBUILD_TESTING=OFF \
+		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
+		-DCHECK_NSCLIENT_MISSING=ON
