@@ -39,10 +39,16 @@ find_package(Mongoose)
 if(POLICY CMP0167)
     cmake_policy(SET CMP0167 OLD)
 endif()
+# Boost.System has been header-only since Boost 1.69, so it is no longer
+# requested as a component: recent Boost (e.g. 1.90 on Debian sid) ships no
+# separate boost_system library/target and asking for it makes find_package
+# fail. The header-only pieces are pulled in transitively by filesystem and
+# thread, and ${Boost_SYSTEM_LIBRARY} (still referenced in several CMakeLists)
+# simply expands to empty. 1.75 is the effective minimum: Boost.JSON, required
+# below, first shipped in Boost 1.75.
 find_package(
-    Boost
+    Boost 1.75
     COMPONENTS
-        system
         filesystem
         thread
         regex
