@@ -94,7 +94,13 @@ if(WIN32)
         set(VSTUDIO_EXPRESS ON)
     endif(FOUND_ATL)
 else()
-    set(CMAKE_INSTALL_PREFIX "usr")
+    # Default to an absolute /usr prefix. The previous relative "usr" was
+    # resolved under the build directory (so "make install" landed everything
+    # under <build>/usr) and it overrode any -DCMAKE_INSTALL_PREFIX. Only set a
+    # default when the user has not provided one.
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Install prefix" FORCE)
+    endif()
 endif()
 
 set(BUILD_PYTHON_FOLDER "${CMAKE_SOURCE_DIR}/build/python")
@@ -118,10 +124,21 @@ endif()
 set(MODULE_TARGET_FOLDER lib/nsclient/modules)
 set(LIB_TARGET_FOLDER lib)
 set(SYSTEMD_TARGET_FOLDER /lib/systemd/system)
-set(SBIN_TARGET_FOLDER usr/sbin)
-set(BIN_TARGET_FOLDER usr/bin)
-set(LOG_TARGET_FOLDER var/log)
-set(ETC_TARGET_FOLDER etc)
+if(WIN32)
+    set(SBIN_TARGET_FOLDER usr/sbin)
+    set(BIN_TARGET_FOLDER usr/bin)
+    set(LOG_TARGET_FOLDER var/log)
+    set(ETC_TARGET_FOLDER etc)
+else()
+    # Executables and data install relative to CMAKE_INSTALL_PREFIX (e.g. /usr);
+    # the "usr/" prefixes above would double into /usr/usr/sbin etc. when the
+    # prefix is /usr. Config and logs use absolute system locations so they end
+    # up in /etc and /var regardless of the install prefix.
+    set(SBIN_TARGET_FOLDER sbin)
+    set(BIN_TARGET_FOLDER bin)
+    set(LOG_TARGET_FOLDER /var/log)
+    set(ETC_TARGET_FOLDER /etc)
+endif()
 
 set(NSCP_GLOBAL_DEFINES
     ${NSCP_GLOBAL_DEFINES}
@@ -806,7 +823,7 @@ if(WIN32)
         "PAth for log file"
     )
 else()
-    set(INSTALL_FILES_BASE "usr/lib/nsclient/")
+    set(INSTALL_FILES_BASE "lib/nsclient/")
 
     set(CONFIG_DEFAULT_CONFIG_FOLDER
         "/etc/nsclient"
