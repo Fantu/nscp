@@ -21,7 +21,6 @@ if(NOT WIN32)
         COMPONENT configs
         RENAME nsclient.ini
     )
-    file(MAKE_DIRECTORY ${LOG_TARGET_FOLDER})
     install(
         DIRECTORY
             "nsclient"
