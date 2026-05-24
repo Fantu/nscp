@@ -15,9 +15,11 @@ Build-Depends:
  libffi-dev,
  python3-dev,
  python3-protobuf,
+ python3-jinja2,
  libdbus-1-dev,
  libzip-dev,
  libcrypto++-dev,
+ libgtest-dev,
 Standards-Version: 4.7.3
 Homepage: https://nsclient.org
 Rules-Requires-Root: no
