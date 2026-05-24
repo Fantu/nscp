@@ -9,8 +9,10 @@
 # so it tracks the interpreter currently in the archive.
 PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
 
+# dh_installsysusers (debian/nscp.sysusers) only runs by default from compat 14,
+# which is still beta; enable it explicitly on the stable compat 13.
 %:
-	dh $@
+	dh $@ --with installsysusers
 
 # Minimal agent-only Linux build:
 #  - no web frontend (BUILD_WEBSERVER) and no bundled docs (BUILD_DOCS)
@@ -23,3 +25,10 @@ override_dh_auto_configure:
 		-DBUILD_TESTING=OFF \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON
+
+# The bundled systemd unit writes its PID under /usr (read-only); ship our own
+# (PID in /run) instead. The log directory is created at runtime by the unit
+# (LogsDirectory), so drop the placeholder /var the install lays down.
+execute_after_dh_auto_install:
+	rm -rf debian/nscp/var
+	install -D -m 0644 debian/nsclient.service debian/nscp/usr/lib/systemd/system/nsclient.service
