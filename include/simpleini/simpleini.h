@@ -150,7 +150,8 @@
 
     - To load UTF-8 data on Windows 95, you need to use Microsoft Layer for
       Unicode, or SI_CONVERT_GENERIC, or SI_CONVERT_ICU.
-    - When using SI_CONVERT_GENERIC, ConvertUTF.c must be compiled and linked.
+    - When using SI_CONVERT_GENERIC, NSClient++ routes conversion through its
+      str::utf8 helper (see the include in the SI_CONVERT_GENERIC section).
     - When using SI_CONVERT_ICU, ICU header files must be on the include
       path and icuuc.lib must be linked in.
     - To load a UTF-8 file on Windows AND expose it with SI_CHAR == char,
@@ -2288,8 +2289,8 @@ void CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::DeleteString(const SI_C
 // SimpleIni.h, set the converter that you wish you use by defining one of the
 // following symbols.
 //
-//  SI_CONVERT_GENERIC      Use the Unicode reference conversion library in
-//                          the accompanying files ConvertUTF.h/c
+//  SI_CONVERT_GENERIC      Use a generic UTF conversion; in NSClient++ this is
+//                          provided by the str::utf8 helper (iconv/Win32).
 //  SI_CONVERT_ICU          Use the IBM ICU conversion library. Requires
 //                          ICU headers on include path and icuuc.lib
 //  SI_CONVERT_WIN32        Use the Win32 API functions for conversion.
@@ -2456,11 +2457,15 @@ class SI_ConvertA {
 
 #include <wchar.h>
 
-#include "ConvertUTF.h"
+// NSClient++: the bundled Unicode ConvertUTF.c/.h carried the old Unicode
+// license (DFSG-incompatible), so the UTF-8 <-> wchar_t conversion below is
+// routed through NSClient++'s own str::utf8 helper (iconv on POSIX, the Win32
+// API on Windows) instead, and the ConvertUTF files were removed.
+#include <str/utf8.hpp>
 
 /**
- * Converts UTF-8 to a wchar_t (or equivalent) using the Unicode reference
- * library functions. This can be used on all platforms.
+ * Converts UTF-8 to a wchar_t (or equivalent) using NSClient++'s str::utf8
+ * helper. This can be used on all platforms.
  */
 template <class SI_CHAR>
 class SI_ConvertW {
@@ -2520,21 +2525,19 @@ class SI_ConvertW {
    */
   bool ConvertFromStore(const char *a_pInputData, size_t a_uInputDataLen, SI_CHAR *a_pOutputData, size_t a_uOutputDataSize) {
     if (m_bStoreIsUtf8) {
-      // This uses the Unicode reference implementation to do the
-      // conversion from UTF-8 to wchar_t. The required files are
-      // ConvertUTF.h and ConvertUTF.c which should be included in
-      // the distribution but are publically available from unicode.org
-      // at http://www.unicode.org/Public/PROGRAMS/CVTUTF/
-      ConversionResult retval;
-      const UTF8 *pUtf8 = (const UTF8 *)a_pInputData;
-      if (sizeof(wchar_t) == sizeof(UTF32)) {
-        UTF32 *pUtf32 = (UTF32 *)a_pOutputData;
-        retval = ConvertUTF8toUTF32(&pUtf8, pUtf8 + a_uInputDataLen, &pUtf32, pUtf32 + a_uOutputDataSize, lenientConversion);
-      } else if (sizeof(wchar_t) == sizeof(UTF16)) {
-        UTF16 *pUtf16 = (UTF16 *)a_pOutputData;
-        retval = ConvertUTF8toUTF16(&pUtf8, pUtf8 + a_uInputDataLen, &pUtf16, pUtf16 + a_uOutputDataSize, lenientConversion);
+      // Convert the UTF-8 storage bytes to SI_CHAR (wchar_t) via str::utf8.
+      // a_uInputDataLen may include a trailing NUL byte; it is converted to a
+      // wide NUL so the output stays NUL-terminated, matching the previous
+      // ConvertUTF behaviour. SizeFromStore() returns the byte length as the
+      // SI_CHAR budget, which is always >= the resulting code-point count.
+      const std::wstring wide = utf8::string_to_wstring(std::string(a_pInputData, a_uInputDataLen));
+      if (wide.size() > a_uOutputDataSize) {
+        return false;
       }
-      return retval == conversionOK;
+      for (size_t i = 0; i < wide.size(); ++i) {
+        a_pOutputData[i] = static_cast<SI_CHAR>(wide[i]);
+      }
+      return true;
     } else {
       size_t retval = mbstowcs(a_pOutputData, a_pInputData, a_uOutputDataSize);
       return retval != (size_t)(-1);
@@ -2590,21 +2593,19 @@ class SI_ConvertW {
       }
       ++uInputLen;  // include the NULL char
 
-      // This uses the Unicode reference implementation to do the
-      // conversion from wchar_t to UTF-8. The required files are
-      // ConvertUTF.h and ConvertUTF.c which should be included in
-      // the distribution but are publically available from unicode.org
-      // at http://www.unicode.org/Public/PROGRAMS/CVTUTF/
-      ConversionResult retval;
-      UTF8 *pUtf8 = (UTF8 *)a_pOutputData;
-      if (sizeof(wchar_t) == sizeof(UTF32)) {
-        const UTF32 *pUtf32 = (const UTF32 *)a_pInputData;
-        retval = ConvertUTF32toUTF8(&pUtf32, pUtf32 + uInputLen, &pUtf8, pUtf8 + a_uOutputDataSize, lenientConversion);
-      } else if (sizeof(wchar_t) == sizeof(UTF16)) {
-        const UTF16 *pUtf16 = (const UTF16 *)a_pInputData;
-        retval = ConvertUTF16toUTF8(&pUtf16, pUtf16 + uInputLen, &pUtf8, pUtf8 + a_uOutputDataSize, lenientConversion);
+      // Convert SI_CHAR (wchar_t) to UTF-8 storage bytes via str::utf8. The
+      // trailing NUL is part of the input, so it is encoded too and the output
+      // stays NUL-terminated, matching the previous ConvertUTF behaviour.
+      // SizeToStore() sizes the buffer generously (>= 4 bytes per code point
+      // plus the NUL), so a valid conversion always fits.
+      const std::string narrow = utf8::wstring_to_string(std::wstring(a_pInputData, uInputLen));
+      if (narrow.size() > a_uOutputDataSize) {
+        return false;
       }
-      return retval == conversionOK;
+      for (size_t i = 0; i < narrow.size(); ++i) {
+        a_pOutputData[i] = narrow[i];
+      }
+      return true;
     } else {
       size_t retval = wcstombs(a_pOutputData, a_pInputData, a_uOutputDataSize);
       return retval != (size_t)-1;

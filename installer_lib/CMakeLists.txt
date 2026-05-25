@@ -219,7 +219,6 @@ set(SRCS
     ../libs/settings_manager/settings_manager_impl.cpp
     ../libs/settings_manager/settings_handler_impl.cpp
     ${NSCP_INCLUDEDIR}/nscapi/nscapi_helper.cpp
-    ${NSCP_INCLUDEDIR}/simpleini/ConvertUTF.c
     ${NSCP_INCLUDEDIR}/str/utf8.cpp
     ${NSCP_INCLUDEDIR}/win/credentials.cpp
     ${NSCP_INCLUDEDIR}/win/credentials.hpp
