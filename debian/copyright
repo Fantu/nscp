@@ -1591,16 +1591,20 @@ Files: ./build/cmake/FindCSharp.cmake
  ./build/cmake/UseDotNetFrameworkSdk.cmake
  ./build/cmake/UseMono.cmake
 Copyright: 2006-2010, Mathieu Malaterre <mathieu.malaterre@gmail.com>
-License: UNKNOWN
- FIXME
+License: BSD-3-Clause
+Comment:
+ Imported from GDCM (http://gdcm.sourceforge.net/), which distributes
+ these CMake helper modules under the modified BSD license.
 
 Files: ./include/nscapi/nscapi_core_helper_test.cpp
  ./modules/PythonScript/script_identity_test.cpp
  ./service/plugins/master_plugin_list_test.cpp
  ./service/plugins/plugin_cache_test.cpp
 Copyright: 2004-2016, Michael Medin
-License: UNKNOWN
- FIXME
+License: Apache-2.0
+Comment:
+ NSClient++ own test sources; same Apache-2.0 license as the rest of
+ the project, the upstream header just happens to be missing.
 
 Files: ./tests/package-lock.json
  ./tests/rest/package-lock.json
@@ -1612,10 +1616,12 @@ License: Expat
 Files: ./libs/protobuf/nscp_lua_pb.rc
  ./libs/protobuf/nscp_protobuf.rc
  ./service/NSClient++.rc
-Copyright: 2012, Michael Medin0"
-  2014, Michael Medin0"
-License: UNKNOWN
- FIXME
+Copyright: 2012-2014, Michael Medin
+License: Apache-2.0
+Comment:
+ Windows resource files belonging to NSClient++; the licensecheck output
+ mangled the copyright string (".0\"" suffix), restored to the project
+ author. Same Apache-2.0 license as the rest of NSClient++.
 
 Files: ./include/net/icmp_header.hpp
  ./include/net/ipv4_header.hpp
@@ -1631,16 +1637,16 @@ License: CPL-1.0
 
 Files: ./libs/dotnet-plugin-api/AssemblyInfo.cpp
  ./modules/CSharpSamplePlugin/Properties/AssemblyInfo.cs
-Copyright: 2008
-  2012
-License: UNKNOWN
- FIXME
+Copyright: 2008-2012, Michael Medin
+License: Apache-2.0
+Comment:
+ NSClient++ .NET / C# assembly metadata; Apache-2.0 like the rest of
+ the project (the upstream header was missing).
 
 Files: ./build/cmake/FindProtoBuf.cmake
  ./build/cmake/GoogleProtoBuf.cmake
-Copyright: Ange Optimization ApS 2008
-License: UNKNOWN
- FIXME
+Copyright: 2008, Ange Optimization ApS
+License: BSD-3-Clause
 
 Files: ./docs/docs/images/eventlog-channel-names.png
  ./docs/docs/images/eventlog-find-event.png
@@ -1653,8 +1659,7 @@ License: UNKNOWN
 Files: ./include/bytes/base64.c
  ./include/bytes/base64.h
 Copyright: 2004-2005, Matthew Wilson and Synesis Software
-License: UNKNOWN
- FIXME
+License: BSD-3-Clause
 
 Files: ./docs/docs/images/FAVICON.PNG
  ./web/public/nscp.png
@@ -1662,12 +1667,6 @@ Copyright: :&¼Q4Ãqx9zD×i¶Ï×Xq[ùyÇt.nêþºçÞÞúæ
   <ñâcÄ_"æ'B^NÖòÚiËß
   ÚiOhíÖ>ûS¥½$ÈrÌìÍºýÐì>;³ÅÜx¸DK7åO+Ã5§¼ôA¥ê¾nÀÔ@'gmQl§ý?âa®÷!=ôÒÅå
 License: UNKNOWN
- FIXME
-
-Files: ./include/simpleini/ConvertUTF.c
- ./include/simpleini/ConvertUTF.h
-Copyright: 2001-2004, Unicode, Inc.
-License: Unicode-strict
  FIXME
 
 Files: ./include/clr/clr_scoped_ptr.hpp
@@ -1784,9 +1783,13 @@ License: UNKNOWN
  FIXME
 
 Files: ./installers/installer-NSCP/wixca.dll
-Copyright: 0$181S1r111±1»1Ö1ñ1û1212;2V2
-License: UNKNOWN
- FIXME
+Copyright: WiX Toolset / vendored binary
+License: Binary-no-source
+Comment:
+ Precompiled PE32 DLL with no source shipped in the upstream tarball
+ (DFSG #2 violation). Not built or installed by the agent-only Debian
+ package. Listed in debian/TODO for removal via Files-Excluded on the
+ next +dfsg repack.
 
 Files: ./docs/docs/images/web-welcome.png
 Copyright: 3@ó¶ûßÙóë_éh#Q¿àtî±ëòµÔûÕë6·B!B!P1*,8UvÿN®YyÓï´Êþ«ß¾õJÔÎâÔ°4~ê¬ÑO~î=ÃÓÅ÷Þ[ßúnë io÷Ùê|çåWÛÚ}ù»¯F³OÝ¶TýSÕ]ýF4^*ý·ûú¨*Ï{C!B!BÈ
@@ -1826,14 +1829,21 @@ License: UNKNOWN
  FIXME
 
 Files: ./libs/protobuf_net/Google.Protobuf.dll
-Copyright: 2015, Google Inc.  P KC# runtime library for Protocol Buffers - Google's data interchange format.  
-License: UNKNOWN
- FIXME
+Copyright: 2015, Google Inc. and protobuf-net contributors
+License: Binary-no-source
+Comment:
+ Precompiled PE32 .NET assembly (protobuf-net) with no source shipped
+ in the upstream tarball (DFSG #2 violation). Upstream source is
+ Apache-2.0 (https://github.com/protocolbuffers/protobuf). Not built
+ or installed by the agent-only Debian package. Listed in debian/TODO
+ for removal via Files-Excluded on the next +dfsg repack.
 
 Files: ./packaging/chocolatey/nsclient.nuspec.tmpl
-Copyright: Michael Medin</copyright>
-License: UNKNOWN
- FIXME
+Copyright: 2004-2016, Michael Medin
+License: Apache-2.0
+Comment:
+ Windows packaging template owned by the NSClient++ project; same
+ Apache-2.0 license as the rest of NSClient++.
 
 Files: ./docs/docs/images/installer-configuration.png
 Copyright: N|}ã+[IOò?¼ì/têÌ¹tRÓ:qêl:áéøkiÄ¤ôµ	3èØ«§Ó1W6ÑÑWL££.JG^6
@@ -1950,3 +1960,54 @@ Files: ./docs/docs/images/web-modules.png
 Copyright: õý$ßu]N]º¬úè:§¾pÏºBAAª3_°Ðg   ÕH  È¤AAd	Ò  ²éCAYô! ,@úAA@ }  K ¾
 License: UNKNOWN
  FIXME
+
+License: Apache-2.0
+ Licensed under the Apache License, Version 2.0 (the "License"); you
+ may not use this file except in compliance with the License. You may
+ obtain a copy of the License at
+ .
+     http://www.apache.org/licenses/LICENSE-2.0
+ .
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ implied. See the License for the specific language governing
+ permissions and limitations under the License.
+ .
+ On Debian systems, the complete text of the Apache License, Version
+ 2.0, can be found in /usr/share/common-licenses/Apache-2.0.
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in
+     the documentation and/or other materials provided with the
+     distribution.
+  3. Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived
+     from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: Binary-no-source
+ Vendored precompiled binary; no source form shipped in the upstream
+ tarball. This entry is a placeholder marker: the file does not meet
+ DFSG #2 and is scheduled for removal via Files-Excluded on the next
+ +dfsg repack (see debian/TODO). It is not compiled, linked or
+ installed by the Debian agent-only build.

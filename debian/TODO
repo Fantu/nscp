@@ -1,0 +1,32 @@
+Pending packaging follow-ups
+============================
+
+Repack candidates for +dfsg
+---------------------------
+
+Only what actually violates the DFSG. Everything else (Windows-only C++
+modules, PowerShell scripts, .psd asset sources, Visio docs, .nuspec
+templates, .NET helpers) can stay in orig.tar without consequence since
+it is not compiled, installed, or otherwise exposed by the agent-only
+Debian build.
+
+Must remove (DFSG #2 - precompiled binary without source in the tarball):
+  installers/installer-NSCP/wixca.dll        PE32 DLL, no source shipped
+  libs/protobuf_net/Google.Protobuf.dll      PE32 .NET assembly, no source shipped
+
+Review before next repack (borderline, not a hard blocker):
+  include/clr/clr_scoped_ptr.hpp             CC-BY-SA-3.0 with extra
+                                             "GPL section 7" attribution
+                                             clauses; DFSG-compliant in
+                                             practice but Creative Commons
+                                             is discouraged for software.
+                                             Windows-only (CLR), so dropping
+                                             it costs nothing on Linux.
+
+  docs/source/realtime-monitoring.vsdx       Microsoft Visio file. The vsdx
+                                             container is open XML inside,
+                                             so not strictly DFSG-blocking,
+                                             but it is editable only with
+                                             Visio in practice and never
+                                             installed - safe to drop.
+
