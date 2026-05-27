@@ -1,1 +1,5 @@
-set(BUILD_MODULE 1)
+if(BUILD_WEBSERVER)
+    set(BUILD_MODULE 1)
+else()
+    set(BUILD_MODULE 0)
+endif()
