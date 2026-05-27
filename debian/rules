@@ -11,10 +11,8 @@ export DEB_BUILD_MAINTAINER_OPTIONS = hardening=+all
 # so it tracks the interpreter currently in the archive.
 PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
 
-# dh_installsysusers (debian/nscp.sysusers) only runs by default from compat 14,
-# which is still beta; enable it explicitly on the stable compat 13.
 %:
-	dh $@ --with installsysusers
+	dh $@
 
 # Minimal agent-only Linux build:
 #  - no web frontend (BUILD_WEBSERVER) and no bundled docs (BUILD_DOCS)
