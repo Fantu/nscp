@@ -43,6 +43,20 @@ override_dh_auto_configure:
 override_dh_auto_test:
 	dh_auto_test -- ARGS="--output-on-failure"
 
+# The libnscp_* shared libraries live in /usr/lib/nsclient/ (private libdir,
+# see the LIB_TARGET_FOLDER override in CMakeLists.txt), which is not on the
+# system linker search path. Don't generate a shlibs file or an ldconfig
+# trigger for them: nothing outside the package consumes their ABI, and
+# ldconfig wouldn't scan that directory anyway.
+override_dh_makeshlibs:
+	dh_makeshlibs -Xusr/lib/nsclient -n
+
+# dpkg-shlibdeps only searches /usr/lib by default and does not resolve the
+# DT_RUNPATH we set at build time ($ORIGIN/../lib/nsclient and $ORIGIN/..),
+# so point it at the staging path explicitly.
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(CURDIR)/debian/nscp/usr/lib/nsclient
+
 # The bundled systemd unit writes its PID under /usr (read-only); ship our own
 # (PID in /run) instead. The log directory is created at runtime by the unit
 # (LogsDirectory), so drop the placeholder /var the install lays down.
