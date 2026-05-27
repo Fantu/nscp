@@ -125,7 +125,24 @@ if(WIN32)
     )
 endif()
 set(MODULE_TARGET_FOLDER lib/nsclient/modules)
-set(LIB_TARGET_FOLDER lib)
+if(WIN32)
+    set(LIB_TARGET_FOLDER lib)
+else()
+    # The libnscp_* shared libraries are private to NSClient++ (only the
+    # nscp daemon, the bundled client tools and the loadable modules link
+    # against them - nothing outside the project consumes their ABI), so
+    # install them under the project's private libdir instead of /usr/lib.
+    # On a Multi-Arch: foreign package, an arch-specific shlib in /usr/lib
+    # is flagged by lintian as shared-library-is-multi-arch-foreign; keeping
+    # them in lib/nsclient/ makes both their privacy and their arch nature
+    # explicit, and avoids the need for an SONAME/symbols/-dev split.
+    set(LIB_TARGET_FOLDER lib/nsclient)
+    # Make the loader find them at runtime from:
+    #   - /usr/bin/check_nscp*, /usr/sbin/nscp     -> $ORIGIN/../lib/nsclient
+    #   - /usr/lib/nsclient/modules/*.so           -> $ORIGIN/..
+    # $ORIGIN is escaped so CMake writes it literally into DT_RUNPATH.
+    set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib/nsclient" "\$ORIGIN/..")
+endif()
 set(SYSTEMD_TARGET_FOLDER /lib/systemd/system)
 if(WIN32)
     set(SBIN_TARGET_FOLDER usr/sbin)
