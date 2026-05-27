@@ -18,15 +18,21 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 
 # Minimal agent-only Linux build:
 #  - no web frontend (BUILD_WEBSERVER) and no bundled docs (BUILD_DOCS)
-#  - tests off (BUILD_TESTING) to avoid the googletest FetchContent download
+#  - tests on (BUILD_TESTING); the system GTest (libgtest-dev) is picked up
+#    by find_package(GTest), so no googletest FetchContent download is needed
 #  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING)
 override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DBUILD_WEBSERVER=OFF \
 		-DBUILD_DOCS=OFF \
-		-DBUILD_TESTING=OFF \
+		-DBUILD_TESTING=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON
+
+# Show each failing test's stdout/stderr in the build log so upstream can
+# diagnose without re-running locally.
+override_dh_auto_test:
+	dh_auto_test -- ARGS="--output-on-failure"
 
 # The bundled systemd unit writes its PID under /usr (read-only); ship our own
 # (PID in /run) instead. The log directory is created at runtime by the unit
