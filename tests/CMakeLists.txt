@@ -453,6 +453,10 @@ NSCP_CREATE_TEST(
         ${CMAKE_SOURCE_DIR}/modules/IcingaClient
 )
 
+# The mongoose wrapper test links nscp_mongoose, which only exists when the
+# WEBServer module / HTTP backend is built (BUILD_WEBSERVER). Skip it otherwise
+# so the missing target does not break configuration.
+if(BUILD_WEBSERVER)
 set(MONGOOSE_CPP_DIR ${CMAKE_SOURCE_DIR}/libs/mongoose-cpp)
 
 # Shared (backend-independent) test sources.
@@ -565,6 +569,7 @@ if(WIN32)
         COMMAND_EXPAND_LISTS
     )
 endif()
+endif() # BUILD_WEBSERVER (mongoose_wrapper_test)
 
 set(SETTINGS_INI_TEST_SOURCES
     ${NSCP_INCLUDEDIR}/settings/impl/settings_ini_test.cpp

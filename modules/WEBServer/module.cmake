@@ -1,1 +1,6 @@
-set(BUILD_MODULE 1)
+if(BUILD_WEBSERVER)
+    set(BUILD_MODULE 1)
+else()
+    set(BUILD_MODULE 0)
+    set(BUILD_MODULE_SKIP_REASON "Disabled (-DBUILD_WEBSERVER=OFF)")
+endif()
