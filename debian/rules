@@ -14,26 +14,24 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 %:
 	dh $@
 
-# Minimal agent-only Linux build:
-#  - drop the WEBServer module (BUILD_MODULE_WEBServer=OFF); module selection is
-#    now per-module via option(BUILD_MODULE_<Name>) in build/cmake/functions.cmake.
-#  - force the Beast HTTP backend (NSCP_WEB_BACKEND=beast). The backend selector
-#    in dependencies.cmake runs unconditionally and defaults to the vendored
-#    mongoose source, which is absent on Linux and aborts configure; it has no
-#    "none" value. With the module off ServerBeastImpl is not compiled, and Beast
-#    needs only OpenSSL (libssl-dev) plus Boost coroutine/context, already pulled
-#    in by libboost-all-dev, so this adds no build dependency.
+# Minimal agent-only Linux build (no web/HTTP server):
+#  - BUILD_WEBSERVER=OFF excludes the WEBServer module, its Beast/mongoose HTTP
+#    backend library (libs/mongoose-cpp -> nscp_mongoose) and the mongoose
+#    wrapper test, and skips the HTTP backend selector. So the build needs
+#    neither the vendored mongoose source (a Windows-only download absent on
+#    Linux, which would otherwise abort configure) nor Beast/OpenSSL for a web
+#    layer we do not ship. BUILD_WEBSERVER is a downstream addition (see the
+#    "cmake: add a BUILD_WEBSERVER option ..." patch); upstream currently always
+#    builds the web backend library via the libs/* glob.
 #  - no explicit web/docs switches needed: web/ only copies web/dist when a
-#    developer/CI populated it (the UI is fetched at runtime with
-#    `nscp web install-ui`), and docs/ is gated on MKDOCS_FOUND.
+#    developer/CI populated it, and docs/ is gated on MKDOCS_FOUND.
 #  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
 #    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
 #    FetchContent download is needed.
 #  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
 override_dh_auto_configure:
 	dh_auto_configure -- \
-		-DBUILD_MODULE_WEBServer=OFF \
-		-DNSCP_WEB_BACKEND=beast \
+		-DBUILD_WEBSERVER=OFF \
 		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON
