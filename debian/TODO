@@ -1,32 +1,32 @@
 Pending packaging follow-ups
 ============================
 
-Repack candidates for +dfsg
----------------------------
+Repack for +dfsg (not urgent)
+-----------------------------
 
-Only what actually violates the DFSG. Everything else (Windows-only C++
-modules, PowerShell scripts, .psd asset sources, Visio docs, .nuspec
-templates, .NET helpers) can stay in orig.tar without consequence since
-it is not compiled, installed, or otherwise exposed by the agent-only
-Debian build.
+Only real DFSG violations need removing; everything else (Windows-only C++
+modules, PowerShell, .psd/.vsdx sources, templates, .NET helpers) is free and
+unused by the agent-only build, so it can stay in the tarball. Best done
+together with the license harmonization below, to avoid repacking twice.
 
-Must remove (DFSG #2 - precompiled binary without source in the tarball):
-  installers/installer-NSCP/wixca.dll        PE32 DLL, no source shipped
-  libs/protobuf_net/Google.Protobuf.dll      PE32 .NET assembly, no source shipped
+Must remove (DFSG #2 - prebuilt binary, no source):
+  installers/installer-NSCP/wixca.dll      PE32 DLL
+  libs/protobuf_net/Google.Protobuf.dll    PE32 .NET assembly
 
-Review before next repack (borderline, not a hard blocker):
-  include/clr/clr_scoped_ptr.hpp             CC-BY-SA-3.0 with extra
-                                             "GPL section 7" attribution
-                                             clauses; DFSG-compliant in
-                                             practice but Creative Commons
-                                             is discouraged for software.
-                                             Windows-only (CLR), so dropping
-                                             it costs nothing on Linux.
+Review (borderline, not installed, safe to drop):
+  docs/source/realtime-monitoring.vsdx     Visio file, never installed
 
-  docs/source/realtime-monitoring.vsdx       Microsoft Visio file. The vsdx
-                                             container is open XML inside,
-                                             so not strictly DFSG-blocking,
-                                             but it is editable only with
-                                             Visio in practice and never
-                                             installed - safe to drop.
 
+Upstream license harmonization (in progress)
+--------------------------------------------
+
+Upstream is migrating to SPDX headers and the dual `Apache-2.0 OR
+GPL-2.0-only`. Only part of the tree is migrated so far (base64 and the
+mongoose-cpp library); the rest still carries the old LGPL-2.1+ comment.
+debian/copyright already reflects the migrated files.
+
+When the migration lands (expected in a few weeks), rework debian/copyright:
+  - flip the `Files: *` default from LGPL-2.1+ to `Apache-2.0 or GPL-2`;
+  - drop the per-file exceptions that converge onto that default;
+  - the dual license needs the Apache-2.0 text shipped (COPYING has only GPL-2);
+    a LICENSES/ folder per REUSE is the proposed route.
