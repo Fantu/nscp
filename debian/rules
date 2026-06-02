@@ -15,15 +15,26 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 	dh $@
 
 # Minimal agent-only Linux build:
-#  - no web frontend (BUILD_WEBSERVER) and no bundled docs (BUILD_DOCS)
-#  - tests on (BUILD_TESTING); the system GTest (libgtest-dev) is picked up
-#    by find_package(GTest), so no googletest FetchContent download is needed
-#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING)
+#  - drop the WEBServer module (BUILD_MODULE_WEBServer=OFF); module selection is
+#    now per-module via option(BUILD_MODULE_<Name>) in build/cmake/functions.cmake.
+#  - force the Beast HTTP backend (NSCP_WEB_BACKEND=beast). The backend selector
+#    in dependencies.cmake runs unconditionally and defaults to the vendored
+#    mongoose source, which is absent on Linux and aborts configure; it has no
+#    "none" value. With the module off ServerBeastImpl is not compiled, and Beast
+#    needs only OpenSSL (libssl-dev) plus Boost coroutine/context, already pulled
+#    in by libboost-all-dev, so this adds no build dependency.
+#  - no explicit web/docs switches needed: web/ only copies web/dist when a
+#    developer/CI populated it (the UI is fetched at runtime with
+#    `nscp web install-ui`), and docs/ is gated on MKDOCS_FOUND.
+#  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
+#    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
+#    FetchContent download is needed.
+#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
 override_dh_auto_configure:
 	dh_auto_configure -- \
-		-DBUILD_WEBSERVER=OFF \
-		-DBUILD_DOCS=OFF \
-		-DBUILD_TESTING=ON \
+		-DBUILD_MODULE_WEBServer=OFF \
+		-DNSCP_WEB_BACKEND=beast \
+		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON
 
