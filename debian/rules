@@ -1,0 +1,51 @@
+#!/usr/bin/make -f
+# See debhelper(7) and /usr/share/doc/debmake-doc/ for details.
+
+# Output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINTAINER_OPTIONS = hardening=+all
+
+# NSCP's CMake does not autodetect the Boost.Python component name (see
+# modules/PythonScript/CMakeLists.txt); derive it from the default python3
+# so it tracks the interpreter currently in the archive.
+PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
+
+%:
+	dh $@
+
+# Minimal agent-only Linux build (no web/HTTP server):
+#  - BUILD_MODULE_WEBServer=OFF excludes the WEBServer module, its Beast/mongoose
+#    HTTP backend library (libs/mongoose-cpp -> nscp_mongoose) and the mongoose
+#    wrapper test, and skips the HTTP backend selector. So the build needs
+#    neither the vendored mongoose source (a Windows-only download absent on
+#    Linux, which would otherwise abort configure) nor Beast/OpenSSL for a web
+#    layer we do not ship. BUILD_MODULE_WEBServer is upstream's generic
+#    per-module flag; the downstream "cmake: allow disabling the web layer via
+#    BUILD_MODULE_WEBServer" patch extends it to also gate that backend library,
+#    the selector and the wrapper test (upstream otherwise always builds the web
+#    backend library via the libs/* glob).
+#  - no explicit web/docs switches needed: web/ only copies web/dist when a
+#    developer/CI populated it, and docs/ is gated on MKDOCS_FOUND.
+#  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
+#    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
+#    FetchContent download is needed.
+#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DBUILD_MODULE_WEBServer=OFF \
+		-DNSCP_BUILD_TESTS=ON \
+		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
+		-DCHECK_NSCLIENT_MISSING=ON
+
+# Show each failing test's stdout/stderr in the build log so upstream can
+# diagnose without re-running locally.
+override_dh_auto_test:
+	dh_auto_test -- ARGS="--output-on-failure"
+
+# The bundled systemd unit writes its PID under /usr (read-only); ship our own
+# (PID in /run) instead. The log directory is created at runtime by the unit
+# (LogsDirectory), so drop the placeholder /var the install lays down.
+execute_after_dh_auto_install:
+	rm -rf debian/nscp/var
+	install -D -m 0644 debian/nsclient.service debian/nscp/usr/lib/systemd/system/nsclient.service
