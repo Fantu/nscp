@@ -1,0 +1,32 @@
+Pending packaging follow-ups
+============================
+
+Repack for +dfsg (not urgent)
+-----------------------------
+
+Only real DFSG violations need removing; everything else (Windows-only C++
+modules, PowerShell, .psd/.vsdx sources, templates, .NET helpers) is free and
+unused by the agent-only build, so it can stay in the tarball. Best done
+together with the license harmonization below, to avoid repacking twice.
+
+Must remove (DFSG #2 - prebuilt binary, no source):
+  installers/installer-NSCP/wixca.dll      PE32 DLL
+  libs/protobuf_net/Google.Protobuf.dll    PE32 .NET assembly
+
+Review (borderline, not installed, safe to drop):
+  docs/source/realtime-monitoring.vsdx     Visio file, never installed
+
+
+Upstream license harmonization (in progress)
+--------------------------------------------
+
+Upstream is migrating to SPDX headers and the dual `Apache-2.0 OR
+GPL-2.0-only`. Only part of the tree is migrated so far (base64 and the
+mongoose-cpp library); the rest still carries the old LGPL-2.1+ comment.
+debian/copyright already reflects the migrated files.
+
+When the migration lands (expected in a few weeks), rework debian/copyright:
+  - flip the `Files: *` default from LGPL-2.1+ to `Apache-2.0 or GPL-2`;
+  - drop the per-file exceptions that converge onto that default;
+  - the dual license needs the Apache-2.0 text shipped (COPYING has only GPL-2);
+    a LICENSES/ folder per REUSE is the proposed route.
