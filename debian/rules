@@ -15,16 +15,15 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 	dh $@
 
 # Minimal agent-only Linux build (no web/HTTP server):
-#  - BUILD_MODULE_WEBServer=OFF excludes the WEBServer module, its Beast/mongoose
-#    HTTP backend library (libs/mongoose-cpp -> nscp_mongoose) and the mongoose
-#    wrapper test, and skips the HTTP backend selector. So the build needs
-#    neither the vendored mongoose source (a Windows-only download absent on
-#    Linux, which would otherwise abort configure) nor Beast/OpenSSL for a web
-#    layer we do not ship. BUILD_MODULE_WEBServer is upstream's generic
-#    per-module flag; the downstream "cmake: allow disabling the web layer via
-#    BUILD_MODULE_WEBServer" patch extends it to also gate that backend library,
-#    the selector and the wrapper test (upstream otherwise always builds the web
-#    backend library via the libs/* glob).
+#  - BUILD_MODULE_WEBServer=OFF disables the WEBServer module (upstream's generic
+#    per-module flag). Its HTTP backend library (libs/mongoose-cpp ->
+#    nscp_mongoose) is not built and the mongoose wrapper test is skipped along
+#    with it: with the default web backend (mongoose) the vendored mongoose
+#    source is a Windows-only download absent on Linux, so NSCP_MONGOOSE_AVAILABLE
+#    stays false, the library returns early and the backend selector logs a
+#    status instead of aborting. Without the flag the WEBServer module would
+#    still fail configure on the then-missing nscp_mongoose target. So the build
+#    needs neither that source nor Beast/OpenSSL for a web layer we do not ship.
 #  - no explicit web/docs switches needed: web/ only copies web/dist when a
 #    developer/CI populated it, and docs/ is gated on MKDOCS_FOUND.
 #  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
