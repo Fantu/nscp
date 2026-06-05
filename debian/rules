@@ -48,6 +48,39 @@ override_dh_auto_test:
 # convention, so debhelper installs it (over the upstream unit, same path) and
 # wires up enable/start - no manual install needed here. The log directory is
 # created at runtime by the unit (LogsDirectory), so just drop the placeholder
-# /var the upstream install lays down.
+# /var the upstream install lays down (in debian/tmp, since there are now two
+# binary packages) before debian/nsclient.install moves the tree into place.
 execute_after_dh_auto_install:
-	rm -rf debian/nsclient/var
+	rm -rf debian/tmp/var
+
+# Documentation package (nsclient-doc, Architecture: all). dh-sequence-mkdocs is
+# a Build-Depends-Indep, so dh_mkdocs is only active when the indep packages are
+# built; arch-only builds skip all of this and the empty -arch override below
+# keeps a full build's binary-arch pass from aborting on "MkDocs directory not
+# found".
+#
+# Build the manual with Google Fonts disabled for privacy - the mkdocs-material
+# theme otherwise loads fonts.googleapis.com on every page. Inject font: false
+# into a build-time copy of the upstream config, leaving docs/mkdocs.yml
+# untouched (it is upstream's, not ours). dh_mkdocs then replaces the bundled
+# theme assets (material, lunr) with symlinks into the mkdocs-material package
+# and fills in ${mkdocs:Depends}; it detects the manual by index.html +
+# sitemap.xml + search/search_index.json, so it must run before we drop the
+# sitemap and the offline-useless 404 page.
+override_dh_mkdocs-indep:
+	sed "s|^\( *\)name: 'material'|\1name: 'material'\n\1font: false|" \
+		docs/mkdocs.yml > docs/mkdocs.debian.yml
+	cd docs && mkdocs build -f mkdocs.debian.yml \
+		-d $(CURDIR)/debian/nsclient-doc/usr/share/doc/nsclient-doc/html
+	dh_mkdocs --theme-package mkdocs-material
+	# Drop the sitemap and offline-useless 404 page (after dh_mkdocs, which needs
+	# the sitemap to detect the manual), plus upstream's empty custom.css
+	# (extra_css placeholder; would trip zero-byte-file-in-doc-directory).
+	rm -f \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml.gz \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/404.html \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/custom.css
+
+# nsclient (Architecture: any) ships no MkDocs manual; nothing to do here.
+override_dh_mkdocs-arch:

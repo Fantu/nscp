@@ -1,0 +1,6 @@
+# With more than one binary package, dh_auto_install stages the CMake install
+# into debian/tmp instead of debian/nsclient. Everything CMake produces belongs
+# to nsclient (nsclient-doc is built separately by dh_mkdocs), so move the whole
+# tree across. The /var placeholder is dropped in debian/rules.
+etc
+usr
