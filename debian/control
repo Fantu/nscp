@@ -24,6 +24,7 @@ Build-Depends:
  libgmock-dev,
 Build-Depends-Indep:
  dh-sequence-mkdocs,
+ mkdocs,
  mkdocs-material,
 Standards-Version: 4.7.3
 Homepage: https://nsclient.org
