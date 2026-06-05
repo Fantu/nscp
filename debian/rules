@@ -54,11 +54,14 @@ override_dh_makeshlibs:
 # DT_RUNPATH we set at build time ($ORIGIN/../lib/nsclient and $ORIGIN/..),
 # so point it at the staging path explicitly.
 override_dh_shlibdeps:
-	dh_shlibdeps -l$(CURDIR)/debian/nscp/usr/lib/nsclient
+	dh_shlibdeps -l$(CURDIR)/debian/nsclient/usr/lib/nsclient
 
-# The bundled systemd unit writes its PID under /usr (read-only); ship our own
-# (PID in /run) instead. The log directory is created at runtime by the unit
-# (LogsDirectory), so drop the placeholder /var the install lays down.
+# The upstream unit writes its PID under /usr (read-only); ship our own (PID in
+# /run) instead. Now that the binary package is named "nsclient" the file
+# debian/nsclient.service matches dh_installsystemd's debian/<package>.service
+# convention, so debhelper installs it (over the upstream unit, same path) and
+# wires up enable/start - no manual install needed here. The log directory is
+# created at runtime by the unit (LogsDirectory), so just drop the placeholder
+# /var the upstream install lays down.
 execute_after_dh_auto_install:
-	rm -rf debian/nscp/var
-	install -D -m 0644 debian/nsclient.service debian/nscp/usr/lib/systemd/system/nsclient.service
+	rm -rf debian/nsclient/var
