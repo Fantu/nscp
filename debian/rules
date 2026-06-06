@@ -42,17 +42,6 @@ override_dh_auto_configure:
 override_dh_auto_test:
 	dh_auto_test -- ARGS="--output-on-failure"
 
-# The upstream unit writes its PID under /usr (read-only); ship our own (PID in
-# /run) instead. Now that the binary package is named "nsclient" the file
-# debian/nsclient.service matches dh_installsystemd's debian/<package>.service
-# convention, so debhelper installs it (over the upstream unit, same path) and
-# wires up enable/start - no manual install needed here. The log directory is
-# created at runtime by the unit (LogsDirectory), so just drop the placeholder
-# /var the upstream install lays down (in debian/tmp, since there are now two
-# binary packages) before debian/nsclient.install moves the tree into place.
-execute_after_dh_auto_install:
-	rm -rf debian/tmp/var
-
 # Documentation package (nsclient-doc, Architecture: all). dh-sequence-mkdocs is
 # a Build-Depends-Indep, so dh_mkdocs is only active when the indep packages are
 # built; arch-only builds skip all of this and the empty -arch override below
