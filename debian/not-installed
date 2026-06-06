@@ -1,0 +1,13 @@
+# Files the upstream CMake install stages but that we intentionally do not ship,
+# listed here so dh_missing treats the omission as deliberate rather than
+# aborting the build.
+#
+# - the upstream systemd unit (staged at an absolute /lib/systemd/system via
+#   NSCP_SYSTEMD_UNITDIR): we install our own debian/nsclient.service (PID in
+#   /run, systemd-managed RuntimeDirectory/LogsDirectory) to
+#   /usr/lib/systemd/system via dh_installsystemd instead. See debian/rules.
+# - the /var/log placeholder: the log directory is created at runtime by the
+#   unit's LogsDirectory, with the right ownership for the service user, so the
+#   package ships no root-owned placeholder.
+lib/systemd/system/nsclient.service
+var/log/nsclient/nsclient.log
