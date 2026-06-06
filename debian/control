@@ -26,9 +26,8 @@ Build-Depends-Indep:
  dh-sequence-mkdocs,
  mkdocs,
  mkdocs-material,
-Standards-Version: 4.7.3
+Standards-Version: 4.7.4
 Homepage: https://nsclient.org
-Rules-Requires-Root: no
 #Vcs-Git: https://salsa.debian.org/debian/nscp.git
 #Vcs-Browser: https://salsa.debian.org/debian/nscp
 
