@@ -1,0 +1,4 @@
+# Upstream ships no manual page for the nscp binary and we do not generate one
+# yet. Policy 12.1 recommends a manpage for binaries in sbin; tracked as a
+# packaging follow-up (a help2man-generated page can be added later).
+nsclient: no-manual-page [usr/sbin/nscp]
