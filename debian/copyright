@@ -10,77 +10,77 @@ Comment:
  Default license for the upstream NSClient++ project. Files listed in
  later paragraphs override this default with their specific license.
 
-Files: ./include/nscapi/nscapi_core_helper.cpp
- ./include/nscapi/nscapi_core_wrapper.cpp
- ./include/nscapi/nscapi_helper.cpp
- ./include/nscapi/nscapi_helper_singleton.cpp
- ./include/nscapi/nscapi_metrics_helper.cpp
- ./include/nscapi/nscapi_plugin_impl.cpp
- ./include/nscapi/nscapi_targets.cpp
- ./include/nscapi/nscapi_thin_plugin_impl.cpp
- ./include/nscapi/protobuf/functions_convert.cpp
- ./include/nscapi/protobuf/functions_copy.cpp
- ./include/nscapi/protobuf/functions_exec.cpp
- ./include/nscapi/protobuf/functions_perfdata.cpp
- ./include/nscapi/protobuf/functions_query.cpp
- ./include/nscapi/protobuf/functions_response.cpp
- ./include/nscapi/protobuf/functions_status.cpp
- ./include/nscapi/protobuf/functions_submit.cpp
- ./include/nscapi/protobuf/settings_functions.cpp
- ./include/nscapi/settings/filter.cpp
- ./include/nscapi/settings/helper.cpp
- ./include/nscapi/settings/proxy.cpp
+Files: include/nscapi/nscapi_core_helper.cpp
+ include/nscapi/nscapi_core_wrapper.cpp
+ include/nscapi/nscapi_helper.cpp
+ include/nscapi/nscapi_helper_singleton.cpp
+ include/nscapi/nscapi_metrics_helper.cpp
+ include/nscapi/nscapi_plugin_impl.cpp
+ include/nscapi/nscapi_targets.cpp
+ include/nscapi/nscapi_thin_plugin_impl.cpp
+ include/nscapi/protobuf/functions_convert.cpp
+ include/nscapi/protobuf/functions_copy.cpp
+ include/nscapi/protobuf/functions_exec.cpp
+ include/nscapi/protobuf/functions_perfdata.cpp
+ include/nscapi/protobuf/functions_query.cpp
+ include/nscapi/protobuf/functions_response.cpp
+ include/nscapi/protobuf/functions_status.cpp
+ include/nscapi/protobuf/functions_submit.cpp
+ include/nscapi/protobuf/settings_functions.cpp
+ include/nscapi/settings/filter.cpp
+ include/nscapi/settings/helper.cpp
+ include/nscapi/settings/proxy.cpp
 Copyright: 2004-2016, The NSClient++ Authors - https://nsclient.org
 License: Apache-2.0
 
-Files: ./include/nscapi/nscapi_core_helper_test.cpp
- ./modules/PythonScript/script_identity_test.cpp
- ./service/plugins/master_plugin_list_test.cpp
- ./service/plugins/plugin_cache_test.cpp
+Files: include/nscapi/nscapi_core_helper_test.cpp
+ modules/PythonScript/script_identity_test.cpp
+ service/plugins/master_plugin_list_test.cpp
+ service/plugins/plugin_cache_test.cpp
 Copyright: 2004-2016, Michael Medin
 License: Apache-2.0
 Comment:
  NSClient++ files released under Apache-2.0 (own test sources, generic Medin Apache-2.0).
 
-Files: ./libs/protobuf/nscp_lua_pb.rc
- ./libs/protobuf/nscp_protobuf.rc
- ./service/NSClient++.rc
+Files: libs/protobuf/nscp_lua_pb.rc
+ libs/protobuf/nscp_protobuf.rc
+ service/NSClient++.rc
 Copyright: 2012-2014, Michael Medin
 License: Apache-2.0
 Comment:
  Windows resource files for NSClient++.
 
-Files: ./libs/dotnet-plugin-api/AssemblyInfo.cpp
- ./modules/CSharpSamplePlugin/Properties/AssemblyInfo.cs
+Files: libs/dotnet-plugin-api/AssemblyInfo.cpp
+ modules/CSharpSamplePlugin/Properties/AssemblyInfo.cs
 Copyright: 2008-2012, Michael Medin
 License: Apache-2.0
 Comment:
  NSClient++ .NET / C# assembly metadata.
 
-Files: ./packaging/chocolatey/nsclient.nuspec.tmpl
+Files: packaging/chocolatey/nsclient.nuspec.tmpl
 Copyright: 2004-2016, Michael Medin
 License: Apache-2.0
 Comment:
  Windows packaging template for NSClient++.
 
-Files: ./build/cmake/FindCSharp.cmake
- ./build/cmake/FindDotNetFrameworkSdk.cmake
- ./build/cmake/FindMono.cmake
- ./build/cmake/UseCSharp.cmake
- ./build/cmake/UseDotNetFrameworkSdk.cmake
- ./build/cmake/UseMono.cmake
+Files: build/cmake/FindCSharp.cmake
+ build/cmake/FindDotNetFrameworkSdk.cmake
+ build/cmake/FindMono.cmake
+ build/cmake/UseCSharp.cmake
+ build/cmake/UseDotNetFrameworkSdk.cmake
+ build/cmake/UseMono.cmake
 Copyright: 2006-2010, Mathieu Malaterre <mathieu.malaterre@gmail.com>
 License: BSD-3-Clause
 Comment:
  Imported from GDCM (http://gdcm.sourceforge.net/).
 
-Files: ./build/cmake/FindProtoBuf.cmake
- ./build/cmake/GoogleProtoBuf.cmake
+Files: build/cmake/FindProtoBuf.cmake
+ build/cmake/GoogleProtoBuf.cmake
 Copyright: 2008, Ange Optimization ApS
 License: BSD-3-Clause
 
-Files: ./include/bytes/base64.c
- ./include/bytes/base64.h
+Files: include/bytes/base64.c
+ include/bytes/base64.h
 Copyright: 2004-2026, Michael Medin
 License: Apache-2.0 or GPL-2
 Comment:
@@ -90,8 +90,8 @@ Comment:
  header). This is one of the files already migrated to the dual license; the
  wider migration is tracked in debian/TODO.
 
-Files: ./include/net/icmp_header.hpp
- ./include/net/ipv4_header.hpp
+Files: include/net/icmp_header.hpp
+ include/net/ipv4_header.hpp
 Copyright: 2003-2008, Christopher M. Kohlhoff <chris@kohlhoff.com>
 License: BSL-1.0
  Boost Software License - Version 1.0 - August 17th, 2003
@@ -107,7 +107,7 @@ License: BSL-1.0
  The full text of the Boost Software License v1.0 is available at
  https://www.boost.org/LICENSE_1_0.txt
 
-Files: ./include/clr/clr_scoped_ptr.hpp
+Files: include/clr/clr_scoped_ptr.hpp
 Copyright: 2004-2026, Michael Medin
 License: GPL-2+
 Comment:
@@ -115,14 +115,14 @@ Comment:
  StackOverflow-derived code (R Benjamin Voigt) was replaced by an own
  implementation under the GNU GPL v2 or later.
 
-Files: ./installers/installer-NSCP/WixUI_en-us.wxl
- ./installers/ui/WixUI_MondoNSCP.wxs
+Files: installers/installer-NSCP/WixUI_en-us.wxl
+ installers/ui/WixUI_MondoNSCP.wxs
 Copyright: Microsoft Corporation
 License: CPL-1.0
 Comment:
  FIXME: confirm CPL-1.0 attribution (Common Public License 1.0).
 
-Files: ./libs/mongoose-cpp/*
+Files: libs/mongoose-cpp/*
 Copyright: 2004-2026, Michael Medin
 License: Apache-2.0 or GPL-2
 Comment:
@@ -133,59 +133,50 @@ Comment:
  Gregoire Passault's upstream keep their MIT/Expat license and are listed in
  the following paragraph.
 
-Files: ./libs/mongoose-cpp/Controller.cpp
- ./libs/mongoose-cpp/Controller.h
- ./libs/mongoose-cpp/Request.cpp
- ./libs/mongoose-cpp/Request.h
- ./libs/mongoose-cpp/RequestHandler.h
- ./libs/mongoose-cpp/Response.cpp
- ./libs/mongoose-cpp/Response.h
- ./libs/mongoose-cpp/Server.h
- ./libs/mongoose-cpp/StreamResponse.cpp
- ./libs/mongoose-cpp/StreamResponse.h
- ./libs/mongoose-cpp/LICENSE
+Files: libs/mongoose-cpp/Controller.cpp
+ libs/mongoose-cpp/Controller.h
+ libs/mongoose-cpp/Request.cpp
+ libs/mongoose-cpp/Request.h
+ libs/mongoose-cpp/RequestHandler.h
+ libs/mongoose-cpp/Response.cpp
+ libs/mongoose-cpp/Response.h
+ libs/mongoose-cpp/Server.h
+ libs/mongoose-cpp/StreamResponse.cpp
+ libs/mongoose-cpp/StreamResponse.h
 Copyright: 2013, Gregoire Passault
  2004-2026, Michael Medin
 License: Expat
 Comment:
  Files derived from Gregoire Passault's mongoose-cpp; the upstream MIT/Expat
- license is preserved (SPDX headers carry both copyrights). LICENSE is the
- verbatim upstream MIT text.
+ license is preserved (SPDX headers carry both copyrights).
 
-Files: ./tests/package-lock.json
- ./web/package-lock.json
+Files: tests/package-lock.json
+ web/package-lock.json
 Copyright: NONE
 License: Expat
 Comment:
  npm lockfiles aggregating Expat-licensed dependencies. FIXME upstream.
 
-Files: ./COPYING
- ./files/license.txt
-Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: GPL-2
-Comment:
- Verbatim copies of the GNU GPL v2 license text shipped upstream.
-
-Files: ./packaging/winget/Mickem.NSClient.locale.en-US.yaml.tmpl
+Files: packaging/winget/Mickem.NSClient.locale.en-US.yaml.tmpl
 Copyright: Michael Medin
 License: GPL-2
 Comment:
  FIXME: winget locale template — confirm intended license.
 
-Files: ./packaging/scoop/nsclient.json.tmpl
+Files: packaging/scoop/nsclient.json.tmpl
 Copyright: NONE
 License: GPL-2
 Comment:
  FIXME: scoop manifest template — confirm intended license.
 
-Files: ./packaging/chocolatey/tools/VERIFICATION.txt.tmpl
+Files: packaging/chocolatey/tools/VERIFICATION.txt.tmpl
 Copyright: NONE
 License: GPL-2+
 Comment:
  FIXME: chocolatey verification text template.
 
-Files: ./installers/installer-NSCP/wixca.dll
- ./libs/protobuf_net/Google.Protobuf.dll
+Files: installers/installer-NSCP/wixca.dll
+ libs/protobuf_net/Google.Protobuf.dll
 Copyright: WiX Toolset / Google Inc. / protobuf-net contributors
 License: Binary-no-source
 Comment:
@@ -194,38 +185,38 @@ Comment:
  the agent-only Debian package. Listed in debian/TODO for removal
  via Files-Excluded on the next +dfsg repack.
 
-Files: ./docs/docs/api/images/api_nscp_setup_webserver.png
- ./docs/docs/images/FAVICON.PNG
- ./docs/docs/images/client-ui.png
- ./docs/docs/images/eventlog-channel-names.png
- ./docs/docs/images/eventlog-find-event.png
- ./docs/docs/images/eventlog-realtime-log.png
- ./docs/docs/images/installer-configuration.png
- ./docs/docs/images/installer-select-config.png
- ./docs/docs/images/installer-select-tool.png
- ./docs/docs/images/nsclient-logo.png
- ./docs/docs/images/realtime-monitoring.png
- ./docs/docs/images/web-check_cpu-cores.png
- ./docs/docs/images/web-check_cpu-result.png
- ./docs/docs/images/web-check_cpu.png
- ./docs/docs/images/web-check_ping.png
- ./docs/docs/images/web-login.png
- ./docs/docs/images/web-modules-check_net-loaded.png
- ./docs/docs/images/web-modules-check_net.png
- ./docs/docs/images/web-modules-webserver.png
- ./docs/docs/images/web-modules.png
- ./docs/docs/images/web-select-check_cpu.png
- ./docs/docs/images/web-untrusted-certificates.png
- ./docs/docs/images/web-webserver-settings-port.png
- ./docs/docs/images/web-webserver-settings-save.png
- ./docs/docs/images/web-webserver-settings.png
- ./docs/docs/images/web-welcome.png
- ./docs/source/realtime-monitoring.vsdx
- ./installers/installer-NSCP/Bitmaps/Thumbs.db
- ./installers/installer-NSCP/Bitmaps/bannrbmp.psd
- ./installers/installer-NSCP/Bitmaps/dlgbmp.bmp
- ./resources/help.png
- ./web/public/nscp.png
+Files: docs/docs/api/images/api_nscp_setup_webserver.png
+ docs/docs/images/FAVICON.PNG
+ docs/docs/images/client-ui.png
+ docs/docs/images/eventlog-channel-names.png
+ docs/docs/images/eventlog-find-event.png
+ docs/docs/images/eventlog-realtime-log.png
+ docs/docs/images/installer-configuration.png
+ docs/docs/images/installer-select-config.png
+ docs/docs/images/installer-select-tool.png
+ docs/docs/images/nsclient-logo.png
+ docs/docs/images/realtime-monitoring.png
+ docs/docs/images/web-check_cpu-cores.png
+ docs/docs/images/web-check_cpu-result.png
+ docs/docs/images/web-check_cpu.png
+ docs/docs/images/web-check_ping.png
+ docs/docs/images/web-login.png
+ docs/docs/images/web-modules-check_net-loaded.png
+ docs/docs/images/web-modules-check_net.png
+ docs/docs/images/web-modules-webserver.png
+ docs/docs/images/web-modules.png
+ docs/docs/images/web-select-check_cpu.png
+ docs/docs/images/web-untrusted-certificates.png
+ docs/docs/images/web-webserver-settings-port.png
+ docs/docs/images/web-webserver-settings-save.png
+ docs/docs/images/web-webserver-settings.png
+ docs/docs/images/web-welcome.png
+ docs/source/realtime-monitoring.vsdx
+ installers/installer-NSCP/Bitmaps/Thumbs.db
+ installers/installer-NSCP/Bitmaps/bannrbmp.psd
+ installers/installer-NSCP/Bitmaps/dlgbmp.bmp
+ resources/help.png
+ web/public/nscp.png
 Copyright: NONE
 License: UNKNOWN
  FIXME
@@ -235,13 +226,6 @@ Comment:
  content as fake Copyright lines; those have been dropped. A second
  pass to assign real Copyright/License to each shipped asset is
  tracked in debian/TODO.
-
-Files: ./installers/installer-NSCP/License.rtf
-Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: UNKNOWN
- FIXME
-Comment:
- Installer RTF wrapping the GPL-2 text. FIXME upstream.
 
 Files: debian/*
 Copyright: 2026, Fabio Fantoni <fantonifabio@tiscali.it>
@@ -358,7 +342,3 @@ License: Binary-no-source
  DFSG #2 and is scheduled for removal via Files-Excluded on the next
  +dfsg repack (see debian/TODO). It is not compiled, linked or
  installed by the Debian agent-only build.
-
-License: UNKNOWN
- FIXME: license not yet identified. Tracked for a follow-up review
- pass — see debian/TODO.
