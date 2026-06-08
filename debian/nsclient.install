@@ -1,6 +1,25 @@
-# With more than one binary package, dh_auto_install stages the CMake install
-# into debian/tmp instead of debian/nsclient. Everything CMake produces belongs
-# to nsclient (nsclient-doc is built separately by dh_mkdocs), so move the whole
-# tree across. The /var placeholder is dropped in debian/rules.
-etc
-usr
+# Install the CMake-staged tree (debian/tmp) with explicit paths rather than
+# broad "etc"/"usr" globs, so dh_missing flags anything upstream adds or removes
+# and we make a deliberate decision about it (see debian/not-installed). The
+# documentation, lintian overrides, sysusers fragment, systemd unit and
+# logrotate snippet are installed by the respective dh_* helpers, not from here.
+
+# Main binary, NRPE check helpers and configuration
+usr/sbin/nscp
+usr/bin/check_nscp
+usr/bin/check_nscp_nrpe
+etc/nsclient/nsclient.ini
+
+# Private shared libraries and loadable modules
+usr/lib/nsclient/libnscp_*.so
+usr/lib/nsclient/modules/lib*.so
+
+# Bundled data: settings migration map, op5 defaults, NRPE DH params
+usr/lib/nsclient/old-settings.map
+usr/lib/nsclient/op5.ini
+usr/lib/nsclient/security/*.pem
+
+# Sample/helper scripts (shell, Lua, Python)
+usr/lib/nsclient/scripts/*.sh
+usr/lib/nsclient/scripts/lua/*.lua
+usr/lib/nsclient/scripts/python
