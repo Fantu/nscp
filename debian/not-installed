@@ -9,5 +9,14 @@
 # - the /var/log placeholder: the log directory is created at runtime by the
 #   unit's LogsDirectory, with the right ownership for the service user, so the
 #   package ships no root-owned placeholder.
+# - the web frontend stub: web/CMakeLists.txt copies web/dist/* when populated,
+#   and upstream accidentally ships a stub web/dist/index.html (a Vite template
+#   referencing assets that do not exist). This agent-only package has no web
+#   frontend, so it is intentionally not shipped (reported upstream).
+# - the bundled upstream license.txt: not read at runtime (only the Windows MSI
+#   references it); the licensing is already covered by debian/copyright, so the
+#   redundant copy under the private libdir is not shipped.
 lib/systemd/system/nsclient.service
 var/log/nsclient/nsclient.log
+usr/lib/nsclient/web/index.html
+usr/lib/nsclient/license.txt

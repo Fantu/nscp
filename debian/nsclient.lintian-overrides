@@ -1,4 +1,7 @@
-# Upstream ships no manual page for the nscp binary and we do not generate one
-# yet. Policy 12.1 recommends a manpage for binaries in sbin; tracked as a
-# packaging follow-up (a help2man-generated page can be added later).
+# Upstream ships no manual pages for the nscp binary nor for the bundled NRPE
+# check helpers (check_nscp, check_nscp_nrpe), and we do not generate them yet.
+# Policy 12.1 recommends a manpage for binaries in bin/sbin; tracked as a
+# packaging follow-up (help2man-generated pages can be added later).
 nsclient: no-manual-page [usr/sbin/nscp]
+nsclient: no-manual-page [usr/bin/check_nscp]
+nsclient: no-manual-page [usr/bin/check_nscp_nrpe]
