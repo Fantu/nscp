@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+# See debhelper(7) and /usr/share/doc/debmake-doc/ for details.
+
+# Output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINTAINER_OPTIONS = hardening=+all
+
+# NSCP's CMake does not autodetect the Boost.Python component name (see
+# modules/PythonScript/CMakeLists.txt); derive it from the default python3
+# so it tracks the interpreter currently in the archive.
+PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
+
+%:
+	dh $@
+
+# Minimal agent-only Linux build (no web/HTTP server):
+#  - BUILD_MODULE_WEBServer=OFF disables the WEBServer module (upstream's generic
+#    per-module flag). Its HTTP backend library (libs/mongoose-cpp ->
+#    nscp_mongoose) is not built and the mongoose wrapper test is skipped along
+#    with it: with the default web backend (mongoose) the vendored mongoose
+#    source is a Windows-only download absent on Linux, so NSCP_MONGOOSE_AVAILABLE
+#    stays false, the library returns early and the backend selector logs a
+#    status instead of aborting. Without the flag the WEBServer module would
+#    still fail configure on the then-missing nscp_mongoose target. So the build
+#    needs neither that source nor Beast/OpenSSL for a web layer we do not ship.
+#  - no explicit web/docs switches needed: web/ only copies web/dist when a
+#    developer/CI populated it, and docs/ is gated on MKDOCS_FOUND.
+#  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
+#    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
+#    FetchContent download is needed.
+#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DBUILD_MODULE_WEBServer=OFF \
+		-DNSCP_BUILD_TESTS=ON \
+		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
+		-DCHECK_NSCLIENT_MISSING=ON
+
+# Show each failing test's stdout/stderr in the build log so upstream can
+# diagnose without re-running locally.
+override_dh_auto_test:
+	dh_auto_test -- ARGS="--output-on-failure"
+
+# Documentation package (nsclient-doc, Architecture: all). dh-sequence-mkdocs is
+# a Build-Depends-Indep, so dh_mkdocs is only active when the indep packages are
+# built; arch-only builds skip all of this and the empty -arch override below
+# keeps a full build's binary-arch pass from aborting on "MkDocs directory not
+# found".
+#
+# Build the manual with Google Fonts disabled for privacy - the mkdocs-material
+# theme otherwise loads fonts.googleapis.com on every page. Inject font: false
+# into a build-time copy of the upstream config, leaving docs/mkdocs.yml
+# untouched (it is upstream's, not ours). dh_mkdocs then replaces the bundled
+# theme assets (material, lunr) with symlinks into the mkdocs-material package
+# and fills in ${mkdocs:Depends}; it detects the manual by index.html +
+# sitemap.xml + search/search_index.json, so it must run before we drop the
+# sitemap and the offline-useless 404 page.
+override_dh_mkdocs-indep:
+	sed "s|^\( *\)name: 'material'|\1name: 'material'\n\1font: false|" \
+		docs/mkdocs.yml > docs/mkdocs.debian.yml
+	cd docs && mkdocs build -f mkdocs.debian.yml \
+		-d $(CURDIR)/debian/nsclient-doc/usr/share/doc/nsclient-doc/html
+	dh_mkdocs --theme-package mkdocs-material
+	# Drop the sitemap and offline-useless 404 page (after dh_mkdocs, which needs
+	# the sitemap to detect the manual), plus upstream's empty custom.css
+	# (extra_css placeholder; would trip zero-byte-file-in-doc-directory).
+	rm -f \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml.gz \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/404.html \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/custom.css
+
+# nsclient (Architecture: any) ships no MkDocs manual; nothing to do here.
+override_dh_mkdocs-arch:
