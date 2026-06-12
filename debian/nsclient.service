@@ -1,20 +1,21 @@
 [Unit]
 Description=NSClient++ Monitoring Agent
+Documentation=https://nsclient.org/docs/
 After=network.target
 
 [Service]
 Type=simple
 User=nsclient
 Group=nsclient
-# systemd creates and owns these directories for the service user before start.
-# The upstream unit put the PID under /usr/share (read-only); /run is correct.
-# The log directory is created here too, so the package does not ship it.
-RuntimeDirectory=nsclient
-PIDFile=/run/nsclient/nscp.pid
+# systemd creates and owns the log directory for the service user before
+# start, so the package does not ship it.
 LogsDirectory=nsclient
 LogsDirectoryMode=0750
 WorkingDirectory=/usr/lib/nsclient
-ExecStart=/usr/sbin/nscp service --log-backend threaded-file --run --pid /run/nsclient/nscp.pid
+# No pid file: with Type=simple systemd tracks the main process itself, and
+# nscp only writes one when --pid is passed (nothing would read it; even the
+# logrotate snippet uses copytruncate instead of signalling the daemon).
+ExecStart=/usr/sbin/nscp service --log-backend threaded-file --run
 
 [Install]
 WantedBy=multi-user.target
