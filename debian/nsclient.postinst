@@ -8,9 +8,12 @@ set -e
 # world-readable. The nsclient daemon runs as group "nsclient", so root owns
 # the file and the service group gets read access (0640 root:nsclient).
 #
-# This runs after #DEBHELPER#, where dh_installsysusers inserts the
-# systemd-sysusers call that creates the "nsclient" user/group - the chown
-# below needs that group to already exist.
+# This runs after the debhelper-generated snippets above, where
+# dh_installsysusers inserts the systemd-sysusers call that creates the
+# "nsclient" user/group - the chown below needs that group to already exist.
+# (Do not spell out the literal debhelper token in this comment: dh_installdeb
+# substitutes every occurrence of it, duplicating the snippets and leaving a
+# broken line behind.)
 #
 # As cups/ssl-cert do, the permissions are (re)applied on every configure
 # *unless* the administrator has registered their own dpkg-statoverride for the
