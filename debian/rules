@@ -56,10 +56,16 @@ override_dh_auto_test:
 # and fills in ${mkdocs:Depends}; it detects the manual by index.html +
 # sitemap.xml + search/search_index.json, so it must run before we drop the
 # sitemap and the offline-useless 404 page.
+#
+# --no-directory-urls: upstream's default (use_directory_urls: true) emits
+# links to bare directories ("../foo/"), which only resolve behind a web
+# server; opened from file:// the browser shows a directory listing instead.
+# This manual is read locally from /usr/share/doc, so build flat per-page
+# .html files with .html links.
 override_dh_mkdocs-indep:
 	sed "s|^\( *\)name: 'material'|\1name: 'material'\n\1font: false|" \
 		docs/mkdocs.yml > docs/mkdocs.debian.yml
-	cd docs && mkdocs build -f mkdocs.debian.yml \
+	cd docs && mkdocs build --no-directory-urls -f mkdocs.debian.yml \
 		-d $(CURDIR)/debian/nsclient-doc/usr/share/doc/nsclient-doc/html
 	dh_mkdocs --theme-package mkdocs-material
 	# Drop the sitemap and offline-useless 404 page (after dh_mkdocs, which needs
