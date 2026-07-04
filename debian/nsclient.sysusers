@@ -1,3 +1,2 @@
-# System user the nsclient.service runs as. Created via systemd-sysusers
-# (dh_installsysusers) instead of an adduser call in the postinst.
+# System user/group the nsclient.service runs as.
 u nsclient - "NSClient++ monitoring agent"
