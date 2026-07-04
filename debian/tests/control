@@ -1,0 +1,7 @@
+# Not superficial: the test boots the agent core, loads every shipped module
+# and runs real checks, so dependency transitions (boost, openssl, protobuf,
+# python, ...) that break module loading are caught here.
+# needs-root: the packaged nsclient.ini is root:nsclient 0640.
+Tests: client-queries
+Depends: nsclient
+Restrictions: needs-root
