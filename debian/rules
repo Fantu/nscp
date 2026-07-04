@@ -6,6 +6,10 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
+# For DEB_VERSION_UPSTREAM (the changelog version without epoch and Debian
+# revision), passed to CMake as BUILD_VERSION below.
+include /usr/share/dpkg/pkg-info.mk
+
 # NSCP's CMake does not autodetect the Boost.Python component name (see
 # modules/PythonScript/CMakeLists.txt); derive it from the default python3
 # so it tracks the interpreter currently in the archive.
@@ -30,8 +34,16 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 #    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
 #    FetchContent download is needed.
 #  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
+#  - BUILD_VERSION: without it CMake falls back to a "0.4.0" placeholder (with
+#    a "Version not specified" warning) and bakes it into version.hpp, so the
+#    shipped nscp would report the wrong version. Pass the upstream version
+#    only, never the Debian revision: the version parser treats a "-" in
+#    BUILD_VERSION as a git branch-build pattern and would mis-parse "-1".
+#    DEB_VERSION_UPSTREAM already strips it, so this keeps working unchanged
+#    when the package switches from native to quilt.
 override_dh_auto_configure:
 	dh_auto_configure -- \
+		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
 		-DBUILD_MODULE_WEBServer=OFF \
 		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
