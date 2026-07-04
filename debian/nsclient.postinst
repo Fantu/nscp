@@ -3,21 +3,14 @@ set -e
 
 #DEBHELPER#
 
-# Restrict the main configuration file to the service group. nsclient.ini may
-# hold credentials (NRPE/NSCA/check_mk passwords, etc.), so it should not be
-# world-readable. The nsclient daemon runs as group "nsclient", so root owns
-# the file and the service group gets read access (0640 root:nsclient).
-#
-# This runs after the debhelper-generated snippets above, where
-# dh_installsysusers inserts the systemd-sysusers call that creates the
-# "nsclient" user/group - the chown below needs that group to already exist.
-# (Do not spell out the literal debhelper token in this comment: dh_installdeb
-# substitutes every occurrence of it, duplicating the snippets and leaving a
-# broken line behind.)
-#
-# As cups/ssl-cert do, the permissions are (re)applied on every configure
-# *unless* the administrator has registered their own dpkg-statoverride for the
-# file, in which case it is left untouched. See README.Debian.
+# nsclient.ini may hold credentials (NRPE/NSCA/check_mk passwords, etc.), so
+# restrict it to root:nsclient 0640: the group the daemon runs as can read it,
+# others cannot. This must stay after the debhelper-generated snippets above,
+# whose sysusers call creates the "nsclient" group the chown needs (and never
+# write the literal debhelper token in a comment: dh_installdeb substitutes
+# every occurrence of it). As cups/ssl-cert do, reapply on every configure
+# unless the admin registered a dpkg-statoverride for the file (see
+# README.Debian).
 if [ "$1" = "configure" ] && [ -f /etc/nsclient/nsclient.ini ] \
    && ! dpkg-statoverride --list /etc/nsclient/nsclient.ini >/dev/null 2>&1; then
     chown root:nsclient /etc/nsclient/nsclient.ini

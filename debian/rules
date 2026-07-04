@@ -1,13 +1,8 @@
 #!/usr/bin/make -f
-# See debhelper(7) and /usr/share/doc/debmake-doc/ for details.
-
-# Output every command that modifies files on the build system.
-#export DH_VERBOSE = 1
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-# For DEB_VERSION_UPSTREAM (the changelog version without epoch and Debian
-# revision), passed to CMake as BUILD_VERSION below.
+# Provides DEB_VERSION_UPSTREAM for BUILD_VERSION below.
 include /usr/share/dpkg/pkg-info.mk
 
 # NSCP's CMake does not autodetect the Boost.Python component name (see
@@ -19,28 +14,19 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 	dh $@
 
 # Minimal agent-only Linux build (no web/HTTP server):
-#  - BUILD_MODULE_WEBServer=OFF disables the WEBServer module (upstream's generic
-#    per-module flag). Its HTTP backend library (libs/mongoose-cpp ->
-#    nscp_mongoose) is not built and the mongoose wrapper test is skipped along
-#    with it: with the default web backend (mongoose) the vendored mongoose
-#    source is a Windows-only download absent on Linux, so NSCP_MONGOOSE_AVAILABLE
-#    stays false, the library returns early and the backend selector logs a
-#    status instead of aborting. Without the flag the WEBServer module would
-#    still fail configure on the then-missing nscp_mongoose target. So the build
-#    needs neither that source nor Beast/OpenSSL for a web layer we do not ship.
-#  - no explicit web/docs switches needed: web/ only copies web/dist when a
-#    developer/CI populated it, and docs/ is gated on MKDOCS_FOUND.
-#  - tests on (NSCP_BUILD_TESTS, renamed upstream from BUILD_TESTING); the system
-#    GTest (libgtest-dev) is picked up by find_package(GTest), so no googletest
-#    FetchContent download is needed.
-#  - check_nsclient now lives in a separate repository (CHECK_NSCLIENT_MISSING).
-#  - BUILD_VERSION: without it CMake falls back to a "0.4.0" placeholder (with
-#    a "Version not specified" warning) and bakes it into version.hpp, so the
-#    shipped nscp would report the wrong version. Pass the upstream version
-#    only, never the Debian revision: the version parser treats a "-" in
-#    BUILD_VERSION as a git branch-build pattern and would mis-parse "-1".
-#    DEB_VERSION_UPSTREAM already strips it, so this keeps working unchanged
-#    when the package switches from native to quilt.
+#  - BUILD_MODULE_WEBServer=OFF: without the module nothing links its HTTP
+#    backend library (nscp_mongoose), so it is neither built nor shipped; with
+#    the module on, configure would fail on the vendored mongoose source, a
+#    Windows-only download absent on Linux. No other web/docs switches are
+#    needed: web/ only ships a developer-populated web/dist and docs/ is gated
+#    on mkdocs being found.
+#  - NSCP_BUILD_TESTS=ON: the system GTest (libgtest-dev) is picked up by
+#    find_package(GTest), so no googletest FetchContent download is needed.
+#  - CHECK_NSCLIENT_MISSING=ON: check_nsclient lives in a separate repository.
+#  - BUILD_VERSION: the CMake default is a "0.4.0" placeholder that would end
+#    up in nscp --version. Pass the upstream version without the Debian
+#    revision (CMake would mis-parse a "-" as a git branch-build pattern);
+#    DEB_VERSION_UPSTREAM keeps working unchanged once the package is quilt.
 override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
@@ -54,35 +40,25 @@ override_dh_auto_configure:
 override_dh_auto_test:
 	dh_auto_test -- ARGS="--output-on-failure"
 
-# Documentation package (nsclient-doc, Architecture: all). dh-sequence-mkdocs is
-# a Build-Depends-Indep, so dh_mkdocs is only active when the indep packages are
-# built; arch-only builds skip all of this and the empty -arch override below
-# keeps a full build's binary-arch pass from aborting on "MkDocs directory not
-# found".
+# nsclient-doc manual. dh-sequence-mkdocs is in Build-Depends-Indep, so
+# dh_mkdocs only acts on indep builds; the empty -arch override below keeps a
+# full build's binary-arch pass from aborting on "MkDocs directory not found".
 #
-# Build the manual with Google Fonts disabled for privacy - the mkdocs-material
-# theme otherwise loads fonts.googleapis.com on every page. Inject font: false
-# into a build-time copy of the upstream config, leaving docs/mkdocs.yml
-# untouched (it is upstream's, not ours). dh_mkdocs then replaces the bundled
-# theme assets (material, lunr) with symlinks into the mkdocs-material package
-# and fills in ${mkdocs:Depends}; it detects the manual by index.html +
-# sitemap.xml + search/search_index.json, so it must run before we drop the
-# sitemap and the offline-useless 404 page.
-#
-# --no-directory-urls: upstream's default (use_directory_urls: true) emits
-# links to bare directories ("../foo/"), which only resolve behind a web
-# server; opened from file:// the browser shows a directory listing instead.
-# This manual is read locally from /usr/share/doc, so build flat per-page
-# .html files with .html links.
+# Build from a copy of the upstream config with font: false injected (the
+# mkdocs-material theme otherwise loads Google Fonts on every page) and with
+# --no-directory-urls (the default directory-style links only resolve behind a
+# web server, not from the file:// paths this manual is read at). dh_mkdocs
+# then symlinks the bundled theme assets to the mkdocs-material package and
+# fills in ${mkdocs:Depends}.
 override_dh_mkdocs-indep:
 	sed "s|^\( *\)name: 'material'|\1name: 'material'\n\1font: false|" \
 		docs/mkdocs.yml > docs/mkdocs.debian.yml
 	cd docs && mkdocs build --no-directory-urls -f mkdocs.debian.yml \
 		-d $(CURDIR)/debian/nsclient-doc/usr/share/doc/nsclient-doc/html
 	dh_mkdocs --theme-package mkdocs-material
-	# Drop the sitemap and offline-useless 404 page (after dh_mkdocs, which needs
-	# the sitemap to detect the manual), plus upstream's empty custom.css
-	# (extra_css placeholder; would trip zero-byte-file-in-doc-directory).
+	# Drop the offline-useless files, after dh_mkdocs which needs the sitemap
+	# to detect the manual (custom.css is an empty extra_css placeholder that
+	# would trip zero-byte-file-in-doc-directory).
 	rm -f \
 		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml \
 		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml.gz \
