@@ -1,0 +1,20 @@
+#!/bin/sh
+# Exercise the installed agent through one-shot client-mode queries: each call
+# boots the core, reads the packaged configuration, loads modules (all of them
+# in the first call) and runs a real check, failing on a non-OK result.
+# Thresholds are passed explicitly and are intentionally impossible to hit, so
+# the outcome does not depend on the state of the test host (the defaults may
+# legitimately be WARNING/CRITICAL there, e.g. a nearly full disk).
+set -e
+
+nscp_query() {
+    echo "$ nscp client $*"
+    /usr/sbin/nscp client "$@"
+    echo
+}
+
+nscp_query --load-all --query check_os_version
+nscp_query --module CheckDisk --query check_drivesize \
+    -a drive=/ -a "warn=used>100%" -a "crit=used>100%"
+nscp_query --module CheckSystem --query check_uptime \
+    -a "warn=uptime<2s" -a "crit=uptime<1s"
