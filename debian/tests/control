@@ -5,3 +5,14 @@
 Tests: client-queries
 Depends: nsclient
 Restrictions: needs-root
+
+# Full rebuild with the archive's current build dependencies, catching the
+# transitions the runtime test above cannot see (a SONAME bump leaves the old
+# binaries running against the old library; only a rebuild hits the new one).
+# An explicit dpkg-buildpackage run instead of the build-needed restriction:
+# the latter builds with the nocheck profile, skipping the upstream tests.
+# fakeroot: needed by dpkg-buildpackage's binary targets (Rules-Requires-Root
+# defaults to binary-targets) and not part of @builddeps@.
+Tests: build
+Depends: @builddeps@, fakeroot
+Restrictions: rw-build-tree, allow-stderr
