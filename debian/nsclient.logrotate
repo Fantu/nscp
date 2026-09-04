@@ -1,0 +1,11 @@
+/var/log/nsclient/*.log {
+    weekly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    # nscp keeps its log file open and does not reopen it on a signal, so copy
+    # the file and truncate it in place instead of renaming it.
+    copytruncate
+}

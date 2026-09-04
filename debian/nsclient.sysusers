@@ -1,0 +1,2 @@
+# System user/group the nsclient.service runs as.
+u nsclient - "NSClient++ monitoring agent"

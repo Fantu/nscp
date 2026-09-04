@@ -1,0 +1,5 @@
+# Upstream ships no manual pages; generating them (e.g. via help2man) is a
+# packaging follow-up.
+nsclient: no-manual-page [usr/sbin/nscp]
+nsclient: no-manual-page [usr/bin/check_nscp]
+nsclient: no-manual-page [usr/bin/check_nscp_nrpe]

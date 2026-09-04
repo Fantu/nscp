@@ -1,0 +1,8 @@
+# DEP-12: machine-readable upstream metadata
+# https://wiki.debian.org/UpstreamMetadata
+Bug-Database: https://github.com/mickem/nscp/issues
+Bug-Submit: https://github.com/mickem/nscp/issues/new
+Documentation: https://nsclient.org/docs/
+Repository: https://github.com/mickem/nscp.git
+Repository-Browse: https://github.com/mickem/nscp
+Donation: https://github.com/sponsors/mickem
