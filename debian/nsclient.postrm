@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+# Remove the runtime log directory on purge. The system user is intentionally
+# kept (Debian discourages removing system users, as files may remain owned by
+# them and UIDs should not be reused).
+if [ "$1" = "purge" ]; then
+    rm -rf /var/log/nsclient
+fi
+
+#DEBHELPER#

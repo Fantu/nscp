@@ -1,0 +1,69 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# Provides DEB_VERSION_UPSTREAM for BUILD_VERSION below.
+include /usr/share/dpkg/pkg-info.mk
+
+# NSCP's CMake does not autodetect the Boost.Python component name (see
+# modules/PythonScript/CMakeLists.txt); derive it from the default python3
+# so it tracks the interpreter currently in the archive.
+PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])')
+
+%:
+	dh $@
+
+# Minimal agent-only Linux build (no web/HTTP server):
+#  - BUILD_MODULE_WEBServer=OFF: without the module nothing links its HTTP
+#    backend library (nscp_mongoose), so it is neither built nor shipped; with
+#    the module on, configure would fail on the vendored mongoose source, a
+#    Windows-only download absent on Linux. No other web/docs switches are
+#    needed: web/ only ships a developer-populated web/dist and docs/ is gated
+#    on mkdocs being found.
+#  - NSCP_BUILD_TESTS=ON: the system GTest (libgtest-dev) is picked up by
+#    find_package(GTest), so no googletest FetchContent download is needed.
+#  - CHECK_NSCLIENT_MISSING=ON: check_nsclient lives in a separate repository.
+#  - BUILD_VERSION: the CMake default is a "0.4.0" placeholder that would end
+#    up in nscp --version. Pass the upstream version without the Debian
+#    revision (CMake would mis-parse a "-" as a git branch-build pattern);
+#    DEB_VERSION_UPSTREAM keeps working unchanged once the package is quilt.
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
+		-DBUILD_MODULE_WEBServer=OFF \
+		-DNSCP_BUILD_TESTS=ON \
+		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
+		-DCHECK_NSCLIENT_MISSING=ON
+
+# Show each failing test's stdout/stderr in the build log so upstream can
+# diagnose without re-running locally.
+override_dh_auto_test:
+	dh_auto_test -- ARGS="--output-on-failure"
+
+# nsclient-doc manual. dh-sequence-mkdocs is in Build-Depends-Indep, so
+# dh_mkdocs only acts on indep builds; the empty -arch override below keeps a
+# full build's binary-arch pass from aborting on "MkDocs directory not found".
+#
+# Build from a copy of the upstream config with font: false injected (the
+# mkdocs-material theme otherwise loads Google Fonts on every page) and with
+# --no-directory-urls (the default directory-style links only resolve behind a
+# web server, not from the file:// paths this manual is read at). dh_mkdocs
+# then symlinks the bundled theme assets to the mkdocs-material package and
+# fills in ${mkdocs:Depends}.
+override_dh_mkdocs-indep:
+	sed "s|^\( *\)name: 'material'|\1name: 'material'\n\1font: false|" \
+		docs/mkdocs.yml > docs/mkdocs.debian.yml
+	cd docs && mkdocs build --no-directory-urls -f mkdocs.debian.yml \
+		-d $(CURDIR)/debian/nsclient-doc/usr/share/doc/nsclient-doc/html
+	dh_mkdocs --theme-package mkdocs-material
+	# Drop the offline-useless files, after dh_mkdocs which needs the sitemap
+	# to detect the manual (custom.css is an empty extra_css placeholder that
+	# would trip zero-byte-file-in-doc-directory).
+	rm -f \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/sitemap.xml.gz \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/404.html \
+		debian/nsclient-doc/usr/share/doc/nsclient-doc/html/custom.css
+
+# nsclient (Architecture: any) ships no MkDocs manual; nothing to do here.
+override_dh_mkdocs-arch:
