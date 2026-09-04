@@ -1,0 +1,13 @@
+# Writable state, owned by the service account: the fleet identity
+# (security/agent-state.json), the configuration the fleet sync writes
+# (fleet/) and the agent storage (nsclient.db). The package directory is
+# root-owned and the service is not, so none of this can live there; see
+# upstream's "File Layout" documentation page.
+#
+# Created here rather than with the unit's StateDirectory= because "nscp
+# enroll" is run with sudo and may well run before the service is ever
+# started: systemd would create the directory only at start, and only the
+# top one.
+d /var/lib/nsclient 0750 nsclient nsclient -
+d /var/lib/nsclient/security 0750 nsclient nsclient -
+d /var/lib/nsclient/fleet 0750 nsclient nsclient -
