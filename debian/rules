@@ -27,13 +27,19 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 #    up in nscp --version. Pass the upstream version without the Debian
 #    revision (CMake would mis-parse a "-" as a git branch-build pattern);
 #    DEB_VERSION_UPSTREAM keeps working unchanged once the package is quilt.
+#  - CONFIG_CA_PATH: the trusted bundle a check falls back to when it names no
+#    CA of its own. Upstream probes the build host for one (Debian, RHEL, SUSE
+#    and Alpine paths in turn) and, finding none, warns and guesses, so the
+#    value baked into the binary would depend on whether the build environment
+#    happens to have ca-certificates installed. Name Debian's explicitly.
 override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
 		-DBUILD_MODULE_WEBServer=OFF \
 		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
-		-DCHECK_NSCLIENT_MISSING=ON
+		-DCHECK_NSCLIENT_MISSING=ON \
+		-DCONFIG_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 
 # Show each failing test's stdout/stderr in the build log so upstream can
 # diagnose without re-running locally.
