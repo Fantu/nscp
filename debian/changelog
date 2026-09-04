@@ -1,0 +1,7 @@
+nscp (0.14.1) UNRELEASED; urgency=low
+
+  * Initial release. Closes: #nnnn
+  * NOTE: experimental, work-in-progress build of a future Debian package.
+    The packaging is still incomplete and not intended for production use.
+
+ -- Fabio Fantoni <fantonifabio@tiscali.it>  Mon, 06 Jul 2026 11:21:30 +0000

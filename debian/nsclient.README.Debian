@@ -1,0 +1,44 @@
+nsclient for Debian
+===================
+
+Configuration file permissions
+-------------------------------
+
+The main configuration file /etc/nsclient/nsclient.ini may contain
+credentials (NRPE/NSCA/check_mk passwords, allowed-hosts secrets, ...).
+To keep it from being world-readable while still letting the daemon read
+it, the package sets it to:
+
+    root:nsclient  0640
+
+(root owns the file; the "nsclient" service group, under which the daemon
+runs, gets read access.) These permissions are applied by the postinst on
+every configuration run.
+
+Customising the permissions
+---------------------------
+
+A plain `chmod`/`chown` on the file is NOT persistent: it is reset to
+root:nsclient 0640 on the next package upgrade. To change the owner, group
+or mode permanently, register a dpkg-statoverride - the postinst then
+leaves the file alone:
+
+    # e.g. restrict it to the service user only (the daemon runs as
+    # nsclient, and root can still edit it regardless of the mode):
+    dpkg-statoverride --update --add nsclient nsclient 0600 /etc/nsclient/nsclient.ini
+
+Note that the daemon runs with group "nsclient", so any override you set
+must still let that user/group read the file, otherwise the service will
+fail to start.
+
+To go back to the package-managed permissions, remove the override:
+
+    dpkg-statoverride --remove /etc/nsclient/nsclient.ini
+
+Editing the file
+----------------
+
+Edit it as root (e.g. `sudoedit /etc/nsclient/nsclient.ini`). It is a
+dpkg conffile, so your changes are preserved across upgrades.
+
+ -- Fabio Fantoni <fantonifabio@tiscali.it>
