@@ -17,3 +17,24 @@ only the missing source form in the tarball.
 
 Review (borderline, not installed, safe to drop):
   docs/source/realtime-monitoring.vsdx     Visio file, never installed
+
+Log to the journal instead of a file (evaluate)
+-----------------------------------------------
+
+The unit runs the agent with --log-backend threaded-file, so it writes
+/var/log/nsclient/nsclient.log and debian/nsclient.logrotate rotates it with
+copytruncate. Logging to the journal instead - by passing --log-backend console,
+since a service with no flag now picks threaded-file itself - would drop the
+rotation snippet, the LogsDirectory= and the copytruncate window in which lines
+written during the copy are lost (nscp does not reopen its log on a signal), and
+would give the usual journalctl -u filtering and retention.
+
+Two things to check before switching:
+  - the console backend writes its own timestamp and tags no priority, so
+    journalctl -p could not filter by level until upstream emits a prefix
+    systemd understands;
+  - errors go to stderr and everything else to stdout, which the journal keeps
+    apart but an admin used to tailing one file may not expect.
+
+check_nscp is unaffected either way: its error count is kept in memory, it does
+not read the log file.
