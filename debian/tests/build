@@ -1,0 +1,10 @@
+#!/bin/sh
+# Rebuild the package from the shipped source tree against the build
+# dependencies currently in the archive, upstream test suite included.
+# A migrating build dependency (boost, protobuf, openssl, cmake, gcc via
+# build-essential, mkdocs, ...) that makes nscp fail to build or fail its
+# tests shows up as a regression in that package's britney excuses within
+# days of the upload, instead of waiting for the periodic archive rebuilds.
+set -e
+
+dpkg-buildpackage -b -us -uc

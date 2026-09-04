@@ -1,0 +1,12 @@
+Document: nsclient
+Title: NSClient++ Manual
+Author: NSClient++ Authors
+Abstract: Manual for NSClient++ (the nsclient package), a monitoring agent for
+ Nagios, Naemon, Icinga and compatible systems. Covers configuration, checks,
+ the supported protocols and every module, including those not built in the
+ agent-only nsclient package.
+Section: System/Monitoring
+
+Format: HTML
+Index: /usr/share/doc/nsclient-doc/html/index.html
+Files: /usr/share/doc/nsclient-doc/html/*.html
