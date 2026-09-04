@@ -1,0 +1,2 @@
+# Build-time copy of docs/mkdocs.yml with Google Fonts disabled (see d/rules).
+docs/mkdocs.debian.yml
