@@ -1,11 +1,13 @@
 #!/bin/sh
 set -e
 
-# Remove the runtime log directory on purge. The system user is intentionally
-# kept (Debian discourages removing system users, as files may remain owned by
-# them and UIDs should not be reused).
+# Remove the runtime log and state directories on purge: what the tmpfiles
+# fragment creates is not removed for us in this debhelper compat level, and
+# the agent writes into both. The system user is intentionally kept (Debian
+# discourages removing system users, as files may remain owned by them and
+# UIDs should not be reused).
 if [ "$1" = "purge" ]; then
-    rm -rf /var/log/nsclient
+    rm -rf /var/log/nsclient /var/lib/nsclient
 fi
 
 #DEBHELPER#
