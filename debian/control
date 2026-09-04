@@ -39,6 +39,7 @@ Multi-Arch: foreign
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
+ ca-certificates,
 Suggests:
  nsclient-doc,
 Description: monitoring agent for Nagios and compatible systems
