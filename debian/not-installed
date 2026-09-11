@@ -3,9 +3,6 @@
 # - upstream systemd unit: dh_installsystemd installs our
 #   debian/nsclient.service instead, whose LogsDirectory= creates
 #   /var/log/nsclient at start with the right ownership;
-# - web frontend stub: an accidentally committed Vite template referencing
-#   assets that do not exist (reported upstream); this agent-only package has
-#   no web frontend anyway;
 # - bundled license.txt: not read at runtime (only the Windows MSI references
 #   it) and already covered by debian/copyright;
 # - third-party notices and bundled license texts (staged since 0.14.1): not
@@ -13,7 +10,6 @@
 #   debian/copyright and the common licenses ship in
 #   /usr/share/common-licenses, so the duplicate texts are not needed.
 lib/systemd/system/nsclient.service
-usr/lib/nsclient/web/index.html
 usr/lib/nsclient/license.txt
 usr/lib/nsclient/THIRD-PARTY-NOTICES.md
 usr/lib/nsclient/licenses/*.txt
