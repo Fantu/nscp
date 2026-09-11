@@ -23,6 +23,11 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 #  - NSCP_BUILD_TESTS=ON: the system GTest (libgtest-dev) is picked up by
 #    find_package(GTest), so no googletest FetchContent download is needed.
 #  - CHECK_NSCLIENT_MISSING=ON: check_nsclient lives in a separate repository.
+#  - BUILD_MODULE_DotnetPlugins=OFF, NSCP_DOTNET=OFF: the native .NET plugin
+#    host builds anywhere, but is unusable without the managed plugin API
+#    (NSCP.Core.dll), which needs the dotnet SDK, not in Debian. NSCP_DOTNET
+#    keeps a build host that has the SDK from building the managed side and
+#    restoring its NuGet packages from the network.
 #  - BUILD_VERSION: the CMake default is a "0.4.0" placeholder that would end
 #    up in nscp --version. Pass the upstream version without the Debian
 #    revision (CMake would mis-parse a "-" as a git branch-build pattern);
@@ -39,6 +44,8 @@ override_dh_auto_configure:
 		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON \
+		-DBUILD_MODULE_DotnetPlugins=OFF \
+		-DNSCP_DOTNET=OFF \
 		-DCONFIG_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 
 # Show each failing test's stdout/stderr in the build log so upstream can
