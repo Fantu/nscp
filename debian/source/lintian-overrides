@@ -1,0 +1,5 @@
+# The only attribution in upstream's NOTICE is the project copyright line,
+# which debian/copyright already carries into /usr/share/doc/nsclient/; Apache
+# 2.0 section 4(d) accepts the notices "within the Source form or
+# documentation". The work is also dual-licensed Apache-2.0 OR GPL-2.0-only.
+nscp source: missing-notice-file-for-apache-license [NOTICE]
