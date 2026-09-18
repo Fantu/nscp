@@ -1,17 +1,6 @@
 Pending packaging follow-ups
 ============================
 
-Non-free ConvertUTF in replxx (blocks main)
--------------------------------------------
-
-libs/replxx/src/ConvertUTF.{cpp,h} carry Unicode, Inc.'s old licence, whose
-grant is limited to "products supporting the Unicode Standard" and does not
-allow modification (lintian: license-problem-old-unicode, #854209). Unlike the
-binaries below they cannot simply be dropped in a repack: replxx is compiled
-into the CommandClient module. Upstream has to either carry the current
-Unicode licence for them, as LLVM did (SPDX Unicode-DFS-2015), or replace them
-with the project's own str::utf8 helper, as it did for SimpleIni.
-
 Repack for +dfsg (not urgent)
 -----------------------------
 
