@@ -5,31 +5,37 @@ Configuration file permissions
 -------------------------------
 
 The main configuration file /etc/nsclient/nsclient.ini may contain
-credentials (NRPE/NSCA/check_mk passwords, allowed-hosts secrets, ...).
-To keep it from being world-readable while still letting the daemon read
-it, the package sets it to:
+credentials (NRPE/NSCA/check_mk passwords, allowed-hosts secrets, ...),
+and so may any file it includes. To keep them from being world-readable
+while still letting the daemon read them, the package sets:
 
-    root:nsclient  0640
+    /etc/nsclient               root:nsclient  0750
+    /etc/nsclient/nsclient.ini  root:nsclient  0640
 
-(root owns the file; the "nsclient" service group, under which the daemon
-runs, gets read access.) These permissions are applied by the postinst on
-every configuration run.
+(root owns them; the "nsclient" service group, under which the daemon
+runs, gets read access.) The directory mode also covers files you add
+there yourself, such as included configuration files, whatever their own
+mode. These permissions are applied by the postinst on every configuration
+run.
+
+The daemon cannot write its own configuration: settings changes are made
+as root (e.g. `sudo nscp settings ...`).
 
 Customising the permissions
 ---------------------------
 
-A plain `chmod`/`chown` on the file is NOT persistent: it is reset to
-root:nsclient 0640 on the next package upgrade. To change the owner, group
-or mode permanently, register a dpkg-statoverride - the postinst then
-leaves the file alone:
+A plain `chmod`/`chown` on the directory or the file is NOT persistent: it
+is reset on the next package upgrade. To change the owner, group or mode
+permanently, register a dpkg-statoverride - the postinst then leaves that
+path alone:
 
-    # e.g. restrict it to the service user only (the daemon runs as
+    # e.g. restrict the file to the service user only (the daemon runs as
     # nsclient, and root can still edit it regardless of the mode):
     dpkg-statoverride --update --add nsclient nsclient 0600 /etc/nsclient/nsclient.ini
 
 Note that the daemon runs with group "nsclient", so any override you set
-must still let that user/group read the file, otherwise the service will
-fail to start.
+must still let that user/group reach the directory and read the file,
+otherwise the service will fail to start.
 
 To go back to the package-managed permissions, remove the override:
 
