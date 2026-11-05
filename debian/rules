@@ -14,12 +14,16 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 	dh $@
 
 # Minimal agent-only Linux build (no web/HTTP server):
-#  - BUILD_MODULE_WEBServer=OFF: without the module nothing links its HTTP
-#    backend library (nscp_mongoose), so it is neither built nor shipped; with
-#    the module on, configure would fail on the vendored mongoose source, a
-#    Windows-only download absent on Linux. No other web/docs switches are
-#    needed: web/ only ships a developer-populated web/dist and docs/ is gated
-#    on mkdocs being found.
+#  - BUILD_MODULE_WEBServer=OFF, BUILD_MODULE_NCPAServer=OFF: these are the
+#    only modules linking the HTTP backend library (nscp_mongoose), so with
+#    both off it is neither built nor shipped. With WEBServer on, configure
+#    would fail on the vendored mongoose source, a Windows-only download
+#    absent on Linux. NCPAServer (an experimental HTTPS listener for the
+#    Nagios NCPA API) is silently skipped upstream while that source is
+#    missing; disable it explicitly so it does not start shipping the day
+#    the backend becomes available. No other web/docs switches are
+#    needed: web/ only ships a developer-populated web/dist and docs/ is
+#    gated on mkdocs being found.
 #  - NSCP_BUILD_TESTS=ON: the system GTest (libgtest-dev) is picked up by
 #    find_package(GTest), so no googletest FetchContent download is needed.
 #  - CHECK_NSCLIENT_MISSING=ON: check_nsclient lives in a separate repository.
@@ -41,6 +45,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
 		-DBUILD_MODULE_WEBServer=OFF \
+		-DBUILD_MODULE_NCPAServer=OFF \
 		-DNSCP_BUILD_TESTS=ON \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON \
