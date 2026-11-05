@@ -53,8 +53,8 @@ Comment:
  MIT/Expat license is preserved (the SPDX headers carry both copyrights).
  The rest of the vendored, substantially rewritten mongoose-cpp library is
  dual-licensed like the project (Files: * above). Neither is built or
- installed by the agent-only Debian package: the WEBServer module and this
- library are excluded from the build.
+ installed by the agent-only Debian package: the library is only linked
+ by the WEBServer and NCPAServer modules, both excluded from the build.
 
 Files: libs/replxx/include/*
  libs/replxx/src/*
