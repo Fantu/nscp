@@ -24,8 +24,10 @@ PY3_VER := $(shell python3 -c 'import sys; print("%d%d" % sys.version_info[:2])'
 #    the backend becomes available. No other web/docs switches are
 #    needed: web/ only ships a developer-populated web/dist and docs/ is
 #    gated on mkdocs being found.
-#  - NSCP_BUILD_TESTS=ON: the system GTest (libgtest-dev) is picked up by
+#  - NSCP_BUILD_TESTS: the system GTest (libgtest-dev) is picked up by
 #    find_package(GTest), so no googletest FetchContent download is needed.
+#    Off under nocheck: most of the compile time goes to the test binaries,
+#    which rebuild the sources they test, and none of them is installed.
 #  - CHECK_NSCLIENT_MISSING=ON: check_nsclient lives in a separate repository.
 #  - BUILD_MODULE_DotnetPlugins=OFF, NSCP_DOTNET=OFF: the native .NET plugin
 #    host builds anywhere, but is unusable without the managed plugin API
@@ -46,7 +48,7 @@ override_dh_auto_configure:
 		-DBUILD_VERSION=$(DEB_VERSION_UPSTREAM) \
 		-DBUILD_MODULE_WEBServer=OFF \
 		-DBUILD_MODULE_NCPAServer=OFF \
-		-DNSCP_BUILD_TESTS=ON \
+		-DNSCP_BUILD_TESTS=$(if $(filter nocheck,$(DEB_BUILD_OPTIONS)),OFF,ON) \
 		-DNSCP_BOOST_PYTHON_VERSION=python$(PY3_VER) \
 		-DCHECK_NSCLIENT_MISSING=ON \
 		-DBUILD_MODULE_DotnetPlugins=OFF \

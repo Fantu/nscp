@@ -21,8 +21,8 @@ Build-Depends:
  libzip-dev,
  libcrypto++-dev,
  libmariadb-dev,
- libgtest-dev,
- libgmock-dev,
+ libgtest-dev <!nocheck>,
+ libgmock-dev <!nocheck>,
 Build-Depends-Indep:
  dh-sequence-mkdocs,
  mkdocs,
