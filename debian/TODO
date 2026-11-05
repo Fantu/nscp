@@ -21,20 +21,17 @@ Log to the journal instead of a file (evaluate)
 -----------------------------------------------
 
 The unit runs the agent with --log-backend threaded-file, so it writes
-/var/log/nsclient/nsclient.log and debian/nsclient.logrotate rotates it with
-copytruncate. Logging to the journal instead - by passing --log-backend console,
-since a service with no flag now picks threaded-file itself - would drop the
-rotation snippet, the log directory in nsclient.tmpfiles and the copytruncate
-window in which lines written during the copy are lost (nscp does not reopen its
-log on a signal), and would give the usual journalctl -u filtering and
-retention.
+/var/log/nsclient/nsclient.log, rotated by debian/nsclient.logrotate. The
+service also writes every line to stdout, so the journal already holds a
+second copy of the whole log. Logging to the journal alone, with --log-backend
+console (a service with no flag picks threaded-file itself), would drop that
+duplicate, the rotation snippet and the log directory in nsclient.tmpfiles,
+and would give the usual journalctl -u filtering and retention.
 
-Two things to check before switching:
-  - the console backend writes its own timestamp and tags no priority, so
-    journalctl -p could not filter by level until upstream emits a prefix
-    systemd understands;
-  - errors go to stderr and everything else to stdout, which the journal keeps
-    apart but an admin used to tailing one file may not expect.
+What is missing before switching: nscp tags no priority. Every line goes to
+stdout, errors included, so the journal files them all as "info" and
+journalctl -p cannot filter by level until upstream emits the sd-daemon(3)
+level prefix.
 
 check_nscp is unaffected either way: its error count is kept in memory, it does
 not read the log file.

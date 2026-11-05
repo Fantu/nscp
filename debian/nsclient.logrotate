@@ -5,7 +5,6 @@
     delaycompress
     missingok
     notifempty
-    # nscp keeps its log file open and does not reopen it on a signal, so copy
-    # the file and truncate it in place instead of renaming it.
-    copytruncate
+    # No copytruncate or postrotate: nscp opens the file for every line, so
+    # after the rename it creates a new one on its own.
 }
