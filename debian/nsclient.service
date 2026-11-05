@@ -7,10 +7,9 @@ After=network.target
 Type=simple
 User=nsclient
 Group=nsclient
-# systemd creates and owns the log directory for the service user before
-# start, so the package does not ship it.
-LogsDirectory=nsclient
-LogsDirectoryMode=0750
+# The log directory comes from debian/nsclient.tmpfiles, not LogsDirectory=:
+# in the mount namespace the hardening below creates, systemd bind-mounts it,
+# and check_drivesize then reports /var/log/nsclient as a drive.
 WorkingDirectory=/usr/lib/nsclient
 # No pid file: with Type=simple systemd tracks the main process itself, and
 # nscp only writes one when --pid is passed (nothing would read it; even the

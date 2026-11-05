@@ -11,3 +11,6 @@
 d /var/lib/nsclient 0750 nsclient nsclient -
 d /var/lib/nsclient/security 0750 nsclient nsclient -
 d /var/lib/nsclient/fleet 0750 nsclient nsclient -
+
+# The log directory, written by the service account.
+d /var/log/nsclient 0750 nsclient nsclient -

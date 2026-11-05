@@ -1,8 +1,8 @@
 # Staged by the upstream CMake install but intentionally not shipped, listed
 # here so dh_missing treats the omission as deliberate:
 # - upstream systemd unit: dh_installsystemd installs our
-#   debian/nsclient.service instead, whose LogsDirectory= creates
-#   /var/log/nsclient at start with the right ownership;
+#   debian/nsclient.service instead, and debian/nsclient.tmpfiles creates
+#   /var/log/nsclient with the right ownership;
 # - bundled license.txt: not read at runtime (only the Windows MSI references
 #   it) and already covered by debian/copyright;
 # - third-party notices and bundled license texts (staged since 0.14.1): not

@@ -24,9 +24,10 @@ The unit runs the agent with --log-backend threaded-file, so it writes
 /var/log/nsclient/nsclient.log and debian/nsclient.logrotate rotates it with
 copytruncate. Logging to the journal instead - by passing --log-backend console,
 since a service with no flag now picks threaded-file itself - would drop the
-rotation snippet, the LogsDirectory= and the copytruncate window in which lines
-written during the copy are lost (nscp does not reopen its log on a signal), and
-would give the usual journalctl -u filtering and retention.
+rotation snippet, the log directory in nsclient.tmpfiles and the copytruncate
+window in which lines written during the copy are lost (nscp does not reopen its
+log on a signal), and would give the usual journalctl -u filtering and
+retention.
 
 Two things to check before switching:
   - the console backend writes its own timestamp and tags no priority, so
